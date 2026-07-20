@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCP Debugger"
+  short_description: "Debug MCP servers and client integrations"
+  default_prompt: "Use $mcp-debugger to diagnose why my MCP server is not connecting in Claude Desktop."

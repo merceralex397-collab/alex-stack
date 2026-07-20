@@ -1,0 +1,206 @@
+{
+  "version": 1,
+  "description": "Human-reviewable routing expectations for the flat Codex subagent catalogue.",
+  "cases": [
+    {
+      "id": "map-local-auth-flow",
+      "prompt": "Map the current authentication flow, its entry points, configuration, tests, and likely change surface. Do not change anything.",
+      "expected_agent": "repository-explorer",
+      "should_not_select": [
+        "debug-investigator",
+        "external-researcher"
+      ],
+      "reason": "The request is for local current-state mapping, with no symptom or external fact to investigate."
+    },
+    {
+      "id": "verify-current-api-support",
+      "prompt": "Check the current official documentation and primary sources to confirm whether this API version supports streaming, with links and dates.",
+      "expected_agent": "external-researcher",
+      "should_not_select": [
+        "repository-explorer",
+        "documentation-writer"
+      ],
+      "reason": "The answer depends on unstable external facts and direct source attribution."
+    },
+    {
+      "id": "clarify-ambiguous-export-feature",
+      "prompt": "We should make exports better for customers. Work out who needs what, what is in scope, and how we will know it is successful.",
+      "expected_agent": "requirements-analyst",
+      "should_not_select": [
+        "solution-planner",
+        "implementation-worker"
+      ],
+      "reason": "Material product intent and acceptance criteria are unresolved, so implementation planning would be premature."
+    },
+    {
+      "id": "plan-stable-settings-feature",
+      "prompt": "The accepted requirement is to add per-user notification settings. Inspect the repository and produce a decision-complete implementation, migration, test, and rollout plan.",
+      "expected_agent": "solution-planner",
+      "should_not_select": [
+        "requirements-analyst",
+        "implementation-worker"
+      ],
+      "reason": "Intent is stable and the remaining work is a grounded technical plan."
+    },
+    {
+      "id": "implement-bounded-validation-change",
+      "prompt": "Implement the agreed email validation behaviour in the assigned parser files and run the focused tests.",
+      "expected_agent": "implementation-worker",
+      "should_not_select": [
+        "debug-investigator",
+        "solution-planner"
+      ],
+      "reason": "The behaviour, ownership, and validation target are already clear."
+    },
+    {
+      "id": "diagnose-intermittent-crash",
+      "prompt": "Find why the service intermittently crashes after reconnecting. Reproduce it, test competing causes, and report the root cause without fixing it.",
+      "expected_agent": "debug-investigator",
+      "should_not_select": [
+        "implementation-worker",
+        "test-engineer"
+      ],
+      "reason": "The unknown causal path must be established before implementation or regression coverage."
+    },
+    {
+      "id": "review-branch-for-defects",
+      "prompt": "Review this branch for concrete correctness defects, regressions, error-handling problems, and missing tests. Do not edit it.",
+      "expected_agent": "code-reviewer",
+      "should_not_select": [
+        "implementation-worker",
+        "test-engineer"
+      ],
+      "reason": "The requested outcome is an independent findings-first review of an existing change."
+    },
+    {
+      "id": "add-known-regression-coverage",
+      "prompt": "Add regression tests for the confirmed empty-response bug using the existing fixture pattern, then run the focused suite.",
+      "expected_agent": "test-engineer",
+      "should_not_select": [
+        "code-reviewer",
+        "debug-investigator"
+      ],
+      "reason": "The defect is known and test design plus test-file ownership is the primary task."
+    },
+    {
+      "id": "document-verified-cli-change",
+      "prompt": "Update the usage and troubleshooting documentation for the new verified CLI flags, including tested examples and links.",
+      "expected_agent": "documentation-writer",
+      "should_not_select": [
+        "external-researcher",
+        "implementation-worker"
+      ],
+      "reason": "The deliverable is a bounded documentation change grounded in already verified behaviour."
+    },
+    {
+      "id": "review-permission-boundary",
+      "prompt": "Review the new admin endpoint for authentication, authorisation bypass, secret exposure, hostile input, and realistic abuse paths.",
+      "expected_agent": "security-reviewer",
+      "should_not_select": [
+        "code-reviewer",
+        "implementation-worker"
+      ],
+      "reason": "Trust, privilege, and attacker behaviour require the security-specific playbook."
+    },
+    {
+      "id": "review-modal-accessibility",
+      "prompt": "Test the new modal for keyboard navigation, focus management, screen-reader semantics, contrast, zoom, and reduced motion.",
+      "expected_agent": "accessibility-reviewer",
+      "should_not_select": [
+        "code-reviewer",
+        "test-engineer"
+      ],
+      "reason": "Assistive-technology and inclusive-interaction evidence are the primary acceptance surface."
+    },
+    {
+      "id": "measure-latency-regression",
+      "prompt": "Establish whether the latest build regressed p95 request latency, using a controlled workload, repeated measurements, and profiling evidence.",
+      "expected_agent": "performance-profiler",
+      "should_not_select": [
+        "debug-investigator",
+        "test-engineer"
+      ],
+      "reason": "Comparable baselines, distributions, and attribution are required rather than a functional pass or fail."
+    },
+    {
+      "id": "review-live-schema-transition",
+      "prompt": "Review this zero-downtime schema and backfill plan for mixed-version compatibility, retries, reconciliation, rollback, and partial cutover.",
+      "expected_agent": "data-migration-reviewer",
+      "should_not_select": [
+        "solution-planner",
+        "code-reviewer"
+      ],
+      "reason": "A live data transition introduces integrity and recovery checks absent from ordinary planning."
+    },
+    {
+      "id": "compare-model-evaluation",
+      "prompt": "Build an offline-first evaluation to compare these models, including dataset and prompt versions, invalid probes, leakage checks, metrics, immutable attempts, and a hard gate before billed runs.",
+      "expected_agent": "ai-evaluation-specialist",
+      "should_not_select": [
+        "test-engineer",
+        "performance-profiler"
+      ],
+      "reason": "Evaluation validity, provenance, stochastic results, and cost controls are central."
+    },
+    {
+      "id": "diagnose-mcp-tools-missing",
+      "prompt": "Diagnose why this MCP server starts but exposes no tools in the client. Check lifecycle, capabilities, schemas, logs, transport, and host behaviour, then fix it if authorised.",
+      "expected_agent": "mcp-integration-specialist",
+      "should_not_select": [
+        "debug-investigator",
+        "implementation-worker"
+      ],
+      "reason": "MCP lifecycle and host semantics materially change both diagnosis and repair."
+    },
+    {
+      "id": "ordinary-rest-integration",
+      "prompt": "Implement the agreed REST client method in the assigned connector files using the existing authentication and retry helpers.",
+      "expected_agent": "implementation-worker",
+      "should_not_select": [
+        "mcp-integration-specialist",
+        "external-researcher"
+      ],
+      "reason": "This is a bounded ordinary API change with no MCP protocol concern."
+    },
+    {
+      "id": "document-local-known-behaviour",
+      "prompt": "Correct the local README example so it matches the command already covered by tests.",
+      "expected_agent": "documentation-writer",
+      "should_not_select": [
+        "external-researcher",
+        "repository-explorer"
+      ],
+      "reason": "No external research is needed for a small verified documentation correction."
+    },
+    {
+      "id": "known-race-fix",
+      "prompt": "The root cause is the confirmed unsynchronised cache write. Apply the approved lock change in the assigned module and run its tests.",
+      "expected_agent": "implementation-worker",
+      "should_not_select": [
+        "debug-investigator",
+        "code-reviewer"
+      ],
+      "reason": "Diagnosis is complete and a bounded fix is explicitly authorised."
+    },
+    {
+      "id": "unknown-test-failure",
+      "prompt": "This unit test started failing only on CI and nobody knows why. Reproduce and isolate the cause; do not change the test yet.",
+      "expected_agent": "debug-investigator",
+      "should_not_select": [
+        "test-engineer",
+        "implementation-worker"
+      ],
+      "reason": "The request is causal investigation, not test authoring."
+    },
+    {
+      "id": "ordinary-schema-code-change",
+      "prompt": "Add the new optional field to the unused local prototype schema and serializer; there is no existing persisted data.",
+      "expected_agent": "implementation-worker",
+      "should_not_select": [
+        "data-migration-reviewer",
+        "solution-planner"
+      ],
+      "reason": "With no live data transition, the specialist migration playbook is unnecessary."
+    }
+  ]
+}

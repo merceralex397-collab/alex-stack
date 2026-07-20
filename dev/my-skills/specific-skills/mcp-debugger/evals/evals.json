@@ -1,0 +1,65 @@
+{
+  "skill_name": "mcp-debugger",
+  "description": "Trigger-and-behaviour scenarios for the MCP debugging skill. Each prompt is something a user would actually say; assertions describe what a good response should surface. Run the skill against a fresh agent and grade the response against the assertions.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I added a filesystem MCP server to my claude_desktop_config.json on Windows 11 but it never shows up in the connectors menu. The log says 'spawn npx ENOENT'. My config has \"command\": \"npx\", \"args\": [\"-y\", \"@modelcontextprotocol/server-filesystem\", \"C:\\\\Users\\\\me\\\\data\"].",
+      "expected_output": "Identifies the Windows .cmd-shim spawn failure and recommends wrapping with cmd /c (command=cmd, args=[/c, npx, -y, ...]) or pointing at an absolute node.exe, explicitly noting that an absolute npx.cmd path is NOT a fix on patched Node. Mentions running the diagnostics script and a full quit/reopen.",
+      "files": [],
+      "assertions": [
+        "Recommends the cmd /c wrapper (command=cmd, args starting with /c) as the fix",
+        "States that an absolute path to npx.cmd does not fix it (EINVAL on patched Node)",
+        "Does not merely say 'use an absolute executable path' as the sole fix",
+        "Mentions full quit/reopen and/or the diagnostics script"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My MCP server connects in Claude Desktop and then immediately disconnects. It works fine when I run it from the terminal. It's a Node server.",
+      "expected_output": "Directs the user to the per-server stderr log (mcp-server-<NAME>.log, distinct from mcp.log), and prioritizes the stdout-contamination test (any non-JSON on stdout breaks framing; use console.error not console.log). Mentions env/cwd divergence as the 'works in terminal' clue and the stdout-only pipe test.",
+      "files": [],
+      "assertions": [
+        "Names mcp-server-<NAME>.log (per-server stderr) as the file to read, distinct from mcp.log",
+        "Raises stdout/JSON-RPC contamination (console.log to stdout) as a leading cause",
+        "Gives the stdout-only contamination test (e.g. node server.js 2>/dev/null | head)",
+        "Explains the terminal-works-but-client-fails env/PATH/cwd divergence"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our remote MCP server worked, but now every request returns HTTP 404 after the connection sits idle for a while. Re-running OAuth doesn't help.",
+      "expected_output": "Distinguishes a transport session expiry from an auth problem: 404 carrying an old Mcp-Session-Id means the session is gone; the client must reinitialize with a fresh InitializeRequest and NO session header. Notes this is a known client/SDK bug class and that re-auth is the wrong fix.",
+      "files": [],
+      "assertions": [
+        "Identifies 404 as an expired/terminated transport session, not an auth failure",
+        "Says to reinitialize without the old Mcp-Session-Id",
+        "Explicitly separates session expiry from OAuth/token expiry",
+        "Does not recommend re-running OAuth as the fix"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I'm connecting Claude to a remote MCP server at https://mcp.acme.com/mcp and it keeps failing auth in a loop. How do I figure out what's wrong with the OAuth?",
+      "expected_output": "Walks the OAuth discovery chain with concrete evidence-gathering: send an unauthenticated request and read WWW-Authenticate for resource_metadata; GET /.well-known/oauth-protected-resource for authorization_servers; GET the AS metadata; check audience/resource binding and DCR. Points at the mcp_http_probe.py script or curl, and flags a 401 with no WWW-Authenticate as the classic loop cause.",
+      "files": [],
+      "assertions": [
+        "Describes the 401 -> WWW-Authenticate -> Protected Resource Metadata -> authorization server discovery chain",
+        "Suggests probing with the bundled script (mcp_http_probe.py) or curl against the endpoint and .well-known paths",
+        "Mentions audience/resource binding, DCR, or PKCE as specific failure points",
+        "Flags a 401 missing the WWW-Authenticate/resource_metadata pointer as a top cause"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I put my MCP server config in VS Code under mcpServers in mcp.json but the tools never appear in agent mode. Same JSON works in Cursor.",
+      "expected_output": "Identifies that VS Code uses the top-level key 'servers' (not 'mcpServers') and requires a 'type' field per entry, unlike Cursor/Claude Desktop. Points to the per-client config-key cheat-sheet and the VS Code MCP output/trust commands.",
+      "files": [],
+      "assertions": [
+        "States VS Code uses 'servers' (not 'mcpServers') as the top-level key",
+        "Notes VS Code requires a 'type' field on each server entry",
+        "Explains why the same JSON works in Cursor (which uses mcpServers)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Profile Pack"
+  short_description: "Build and install portable Codex packs"
+  default_prompt: "Use $codex-profile-pack to create and safely install a Codex customisation pack."

@@ -1,0 +1,35 @@
+{
+  "skill_name": "claude-desktop-debug",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My collision-engineers-dvsa-mot extension is installed in Claude Desktop and I can see it listed under extensions, but when I open a chat there are no tools at all. The plus icon doesn't even show up. I haven't changed anything.",
+      "expected_output": "Should detect MSIX vs Standard install, check mcp.log for config or load errors, validate claude_desktop_config.json JSON, check for the dxt-install directory and whether the extension's server log exists, and provide specific PowerShell commands the user can run.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "Claude Desktop just shows a completely white screen when I open it. I tried reinstalling it twice and it still won't load. Windows 11, brand new laptop.",
+      "expected_output": "Should suggest --disable-gpu-compositing launch flag first, then --disable-gpu as fallback, explain how to add it to the shortcut, and point to Event Viewer for deeper diagnosis.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "Every time Windows boots, Claude Desktop crashes straight away. If I wait a minute and open it from the start menu it works perfectly fine. It's really annoying.",
+      "expected_output": "Should identify this as the autostart DLL crash pattern, instruct user to disable autostart via Task Manager Startup Apps, and suggest the shell:startup shortcut workaround.",
+      "assertions": []
+    },
+    {
+      "id": 4,
+      "prompt": "All my MCP tools disappeared after I updated Claude Desktop last week. I can see the servers listed in the config file but nothing shows in the app.",
+      "expected_output": "Should identify the MSIX config path mismatch as the primary hypothesis (tools worked before update, stopped after), provide the Get-AppxPackage detection command, explain the two-path issue, and show how to find the real active config path.",
+      "assertions": []
+    },
+    {
+      "id": 5,
+      "prompt": "Claude Desktop keeps logging me out. Every time I open it I have to sign in again with Google. It's been happening for about three days.",
+      "expected_output": "Should check for ANTHROPIC_API_KEY environment variable conflict first (most non-obvious cause), then guide through clearing the OAuth token cache (config.json), and explain the sign-out/sign-in flow.",
+      "assertions": []
+    }
+  ]
+}
