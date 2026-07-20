@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Stack Selection"
+  short_description: "Inventory and tune a project Codex stack"
+  default_prompt: "Use $codex-stack-selection to inventory the Codex skills, plugins, apps, and MCP servers for this project, analyze the last 14 days of local usage, recommend what to keep or disable, and preview project-scoped configuration changes."

@@ -1,0 +1,4906 @@
+{
+  "generated_at": "2026-07-19T04:04:03.554Z",
+  "source": "Referenced ChatGPT conversation: Subagent Workflow Design",
+  "format": "Codex standalone custom-agent TOML drafts",
+  "activation": [
+    ".codex/agents/<agent-name>.toml",
+    "~/.codex/agents/<agent-name>.toml"
+  ],
+  "design": {
+    "hierarchy": "Root orchestrator -> A manager -> B lead -> C specialist",
+    "delegation": "bounded fan-out followed by mandatory fan-in",
+    "model_policy": "inherit parent model and reasoning effort",
+    "sandbox_policy": "managers, leads, and analysis/review roles are read-only; implementation-capable specialists inherit the parent sandbox"
+  },
+  "teams": [
+    {
+      "order": 1,
+      "slug": "product-requirements",
+      "folder": "01-product-requirements",
+      "title": "Product and Requirements",
+      "optional": false,
+      "artifact": "a decision-ready product brief with users, outcomes, functional and non-functional requirements, acceptance criteria, exclusions, constraints, assumptions, and unresolved questions",
+      "manager": {
+        "role": "Product and Requirements Manager",
+        "id": "product-requirements-product-and-requirements-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Problem Discovery Lead",
+          "id": "product-requirements-problem-discovery-lead",
+          "level": "B",
+          "parent": "product-requirements-product-and-requirements-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "User Needs Analyst",
+              "id": "product-requirements-user-needs-analyst",
+              "level": "C",
+              "parent": "product-requirements-problem-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Business Process Analyst",
+              "id": "product-requirements-business-process-analyst",
+              "level": "C",
+              "parent": "product-requirements-problem-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Stakeholder Analyst",
+              "id": "product-requirements-stakeholder-analyst",
+              "level": "C",
+              "parent": "product-requirements-problem-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Domain Researcher",
+              "id": "product-requirements-domain-researcher",
+              "level": "C",
+              "parent": "product-requirements-problem-discovery-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Requirements Lead",
+          "id": "product-requirements-requirements-lead",
+          "level": "B",
+          "parent": "product-requirements-product-and-requirements-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Functional Requirements Analyst",
+              "id": "product-requirements-functional-requirements-analyst",
+              "level": "C",
+              "parent": "product-requirements-requirements-lead",
+              "read_only": true
+            },
+            {
+              "role": "Non-Functional Requirements Analyst",
+              "id": "product-requirements-non-functional-requirements-analyst",
+              "level": "C",
+              "parent": "product-requirements-requirements-lead",
+              "read_only": true
+            },
+            {
+              "role": "Acceptance Criteria Writer",
+              "id": "product-requirements-acceptance-criteria-writer",
+              "level": "C",
+              "parent": "product-requirements-requirements-lead",
+              "read_only": false
+            },
+            {
+              "role": "Edge Case Analyst",
+              "id": "product-requirements-edge-case-analyst",
+              "level": "C",
+              "parent": "product-requirements-requirements-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Scope and Priority Lead",
+          "id": "product-requirements-scope-and-priority-lead",
+          "level": "B",
+          "parent": "product-requirements-product-and-requirements-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Dependency Analyst",
+              "id": "product-requirements-dependency-analyst",
+              "level": "C",
+              "parent": "product-requirements-scope-and-priority-lead",
+              "read_only": true
+            },
+            {
+              "role": "Value and Impact Analyst",
+              "id": "product-requirements-value-and-impact-analyst",
+              "level": "C",
+              "parent": "product-requirements-scope-and-priority-lead",
+              "read_only": true
+            },
+            {
+              "role": "Effort Analyst",
+              "id": "product-requirements-effort-analyst",
+              "level": "C",
+              "parent": "product-requirements-scope-and-priority-lead",
+              "read_only": true
+            },
+            {
+              "role": "Scope Boundary Reviewer",
+              "id": "product-requirements-scope-boundary-reviewer",
+              "level": "C",
+              "parent": "product-requirements-scope-and-priority-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Requirements Reviewer",
+          "id": "product-requirements-requirements-reviewer",
+          "level": "B",
+          "parent": "product-requirements-product-and-requirements-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Completeness Reviewer",
+              "id": "product-requirements-completeness-reviewer",
+              "level": "C",
+              "parent": "product-requirements-requirements-reviewer",
+              "read_only": true
+            },
+            {
+              "role": "Ambiguity Reviewer",
+              "id": "product-requirements-ambiguity-reviewer",
+              "level": "C",
+              "parent": "product-requirements-requirements-reviewer",
+              "read_only": true
+            },
+            {
+              "role": "Contradiction Reviewer",
+              "id": "product-requirements-contradiction-reviewer",
+              "level": "C",
+              "parent": "product-requirements-requirements-reviewer",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "slug": "planning",
+      "folder": "02-planning",
+      "title": "Planning",
+      "optional": false,
+      "artifact": "an evidence-backed implementation plan covering current state, chosen approach, alternatives, affected components, phases, dependencies, tests, migration, rollout, rollback, and risks",
+      "manager": {
+        "role": "Planning Manager",
+        "id": "planning-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Discovery Lead",
+          "id": "planning-discovery-lead",
+          "level": "B",
+          "parent": "planning-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Repository Explorer",
+              "id": "planning-repository-explorer",
+              "level": "C",
+              "parent": "planning-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Requirements Analyst",
+              "id": "planning-requirements-analyst",
+              "level": "C",
+              "parent": "planning-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Domain Specialist",
+              "id": "planning-domain-specialist",
+              "level": "C",
+              "parent": "planning-discovery-lead",
+              "read_only": false
+            },
+            {
+              "role": "Constraints Analyst",
+              "id": "planning-constraints-analyst",
+              "level": "C",
+              "parent": "planning-discovery-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Ideation Lead",
+          "id": "planning-ideation-lead",
+          "level": "B",
+          "parent": "planning-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Practical Solution Designer",
+              "id": "planning-practical-solution-designer",
+              "level": "C",
+              "parent": "planning-ideation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Alternative Solution Designer",
+              "id": "planning-alternative-solution-designer",
+              "level": "C",
+              "parent": "planning-ideation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Ambitious Solution Designer",
+              "id": "planning-ambitious-solution-designer",
+              "level": "C",
+              "parent": "planning-ideation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Adversarial Brainstormer",
+              "id": "planning-adversarial-brainstormer",
+              "level": "C",
+              "parent": "planning-ideation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Plan Author",
+          "id": "planning-plan-author",
+          "level": "B",
+          "parent": "planning-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Work Breakdown Specialist",
+              "id": "planning-work-breakdown-specialist",
+              "level": "C",
+              "parent": "planning-plan-author",
+              "read_only": false
+            },
+            {
+              "role": "Dependency and Sequencing Specialist",
+              "id": "planning-dependency-and-sequencing-specialist",
+              "level": "C",
+              "parent": "planning-plan-author",
+              "read_only": false
+            },
+            {
+              "role": "Testing Planner",
+              "id": "planning-testing-planner",
+              "level": "C",
+              "parent": "planning-plan-author",
+              "read_only": true
+            },
+            {
+              "role": "Rollout Planner",
+              "id": "planning-rollout-planner",
+              "level": "C",
+              "parent": "planning-plan-author",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Plan Reviewer",
+          "id": "planning-plan-reviewer",
+          "level": "B",
+          "parent": "planning-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Feasibility Reviewer",
+              "id": "planning-feasibility-reviewer",
+              "level": "C",
+              "parent": "planning-plan-reviewer",
+              "read_only": true
+            },
+            {
+              "role": "Completeness Reviewer",
+              "id": "planning-completeness-reviewer",
+              "level": "C",
+              "parent": "planning-plan-reviewer",
+              "read_only": true
+            },
+            {
+              "role": "Risk Reviewer",
+              "id": "planning-risk-reviewer",
+              "level": "C",
+              "parent": "planning-plan-reviewer",
+              "read_only": true
+            },
+            {
+              "role": "Evidence Reviewer",
+              "id": "planning-evidence-reviewer",
+              "level": "C",
+              "parent": "planning-plan-reviewer",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "slug": "architecture",
+      "folder": "03-system-architecture",
+      "title": "System Architecture",
+      "optional": false,
+      "artifact": "an architecture pack containing system context, component boundaries, data flows, interfaces, quality attributes, failure and recovery behavior, and architecture decision records",
+      "manager": {
+        "role": "Architecture Manager",
+        "id": "architecture-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Current-System Analysis Lead",
+          "id": "architecture-current-system-analysis-lead",
+          "level": "B",
+          "parent": "architecture-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Codebase Architect",
+              "id": "architecture-codebase-architect",
+              "level": "C",
+              "parent": "architecture-current-system-analysis-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dependency Mapper",
+              "id": "architecture-dependency-mapper",
+              "level": "C",
+              "parent": "architecture-current-system-analysis-lead",
+              "read_only": true
+            },
+            {
+              "role": "Data Flow Analyst",
+              "id": "architecture-data-flow-analyst",
+              "level": "C",
+              "parent": "architecture-current-system-analysis-lead",
+              "read_only": true
+            },
+            {
+              "role": "Integration Mapper",
+              "id": "architecture-integration-mapper",
+              "level": "C",
+              "parent": "architecture-current-system-analysis-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Solution Architecture Lead",
+          "id": "architecture-solution-architecture-lead",
+          "level": "B",
+          "parent": "architecture-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Application Architect",
+              "id": "architecture-application-architect",
+              "level": "C",
+              "parent": "architecture-solution-architecture-lead",
+              "read_only": true
+            },
+            {
+              "role": "Data Architect",
+              "id": "architecture-data-architect",
+              "level": "C",
+              "parent": "architecture-solution-architecture-lead",
+              "read_only": true
+            },
+            {
+              "role": "Cloud Architect",
+              "id": "architecture-cloud-architect",
+              "level": "C",
+              "parent": "architecture-solution-architecture-lead",
+              "read_only": true
+            },
+            {
+              "role": "Integration Architect",
+              "id": "architecture-integration-architect",
+              "level": "C",
+              "parent": "architecture-solution-architecture-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Quality Attributes Lead",
+          "id": "architecture-quality-attributes-lead",
+          "level": "B",
+          "parent": "architecture-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Scalability Specialist",
+              "id": "architecture-scalability-specialist",
+              "level": "C",
+              "parent": "architecture-quality-attributes-lead",
+              "read_only": false
+            },
+            {
+              "role": "Reliability Specialist",
+              "id": "architecture-reliability-specialist",
+              "level": "C",
+              "parent": "architecture-quality-attributes-lead",
+              "read_only": false
+            },
+            {
+              "role": "Security Architect",
+              "id": "architecture-security-architect",
+              "level": "C",
+              "parent": "architecture-quality-attributes-lead",
+              "read_only": true
+            },
+            {
+              "role": "Maintainability Specialist",
+              "id": "architecture-maintainability-specialist",
+              "level": "C",
+              "parent": "architecture-quality-attributes-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Architecture Review Lead",
+          "id": "architecture-review-lead",
+          "level": "B",
+          "parent": "architecture-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Feasibility Reviewer",
+              "id": "architecture-feasibility-reviewer",
+              "level": "C",
+              "parent": "architecture-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Complexity Reviewer",
+              "id": "architecture-complexity-reviewer",
+              "level": "C",
+              "parent": "architecture-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Vendor Lock-In Reviewer",
+              "id": "architecture-vendor-lock-in-reviewer",
+              "level": "C",
+              "parent": "architecture-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Architecture Decision Record Writer",
+              "id": "architecture-decision-record-writer",
+              "level": "C",
+              "parent": "architecture-review-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "slug": "ux-ui",
+      "folder": "04-ux-ui-design",
+      "title": "UX and UI Design",
+      "optional": false,
+      "artifact": "an implementation-ready design specification covering journeys, information architecture, flows, screen states, responsive behavior, accessibility, components, and interaction rules",
+      "manager": {
+        "role": "UX/UI Manager",
+        "id": "ux-ui-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "UX Research Lead",
+          "id": "ux-ui-ux-research-lead",
+          "level": "B",
+          "parent": "ux-ui-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "User Journey Analyst",
+              "id": "ux-ui-user-journey-analyst",
+              "level": "C",
+              "parent": "ux-ui-ux-research-lead",
+              "read_only": true
+            },
+            {
+              "role": "Workflow Analyst",
+              "id": "ux-ui-workflow-analyst",
+              "level": "C",
+              "parent": "ux-ui-ux-research-lead",
+              "read_only": true
+            },
+            {
+              "role": "Usability Researcher",
+              "id": "ux-ui-usability-researcher",
+              "level": "C",
+              "parent": "ux-ui-ux-research-lead",
+              "read_only": true
+            },
+            {
+              "role": "Accessibility Researcher",
+              "id": "ux-ui-accessibility-researcher",
+              "level": "C",
+              "parent": "ux-ui-ux-research-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Interaction Design Lead",
+          "id": "ux-ui-interaction-design-lead",
+          "level": "B",
+          "parent": "ux-ui-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Information Architecture Designer",
+              "id": "ux-ui-information-architecture-designer",
+              "level": "C",
+              "parent": "ux-ui-interaction-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "User Flow Designer",
+              "id": "ux-ui-user-flow-designer",
+              "level": "C",
+              "parent": "ux-ui-interaction-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Wireframe Designer",
+              "id": "ux-ui-wireframe-designer",
+              "level": "C",
+              "parent": "ux-ui-interaction-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Error and Empty-State Designer",
+              "id": "ux-ui-error-and-empty-state-designer",
+              "level": "C",
+              "parent": "ux-ui-interaction-design-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Visual Design Lead",
+          "id": "ux-ui-visual-design-lead",
+          "level": "B",
+          "parent": "ux-ui-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Design System Specialist",
+              "id": "ux-ui-design-system-specialist",
+              "level": "C",
+              "parent": "ux-ui-visual-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Responsive Design Specialist",
+              "id": "ux-ui-responsive-design-specialist",
+              "level": "C",
+              "parent": "ux-ui-visual-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Typography and Layout Specialist",
+              "id": "ux-ui-typography-and-layout-specialist",
+              "level": "C",
+              "parent": "ux-ui-visual-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Motion and Feedback Specialist",
+              "id": "ux-ui-motion-and-feedback-specialist",
+              "level": "C",
+              "parent": "ux-ui-visual-design-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Design Review Lead",
+          "id": "ux-ui-design-review-lead",
+          "level": "B",
+          "parent": "ux-ui-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Accessibility Reviewer",
+              "id": "ux-ui-accessibility-reviewer",
+              "level": "C",
+              "parent": "ux-ui-design-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Usability Reviewer",
+              "id": "ux-ui-usability-reviewer",
+              "level": "C",
+              "parent": "ux-ui-design-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Consistency Reviewer",
+              "id": "ux-ui-consistency-reviewer",
+              "level": "C",
+              "parent": "ux-ui-design-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Implementation Feasibility Reviewer",
+              "id": "ux-ui-implementation-feasibility-reviewer",
+              "level": "C",
+              "parent": "ux-ui-design-review-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "slug": "frontend",
+      "folder": "05-frontend-development",
+      "title": "Frontend Development",
+      "optional": false,
+      "artifact": "a verified frontend delivery pack covering components, behavior, integration, accessibility, compatibility, performance, tests, and remaining risks",
+      "manager": {
+        "role": "Frontend Manager",
+        "id": "frontend-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "UI Implementation Lead",
+          "id": "frontend-ui-implementation-lead",
+          "level": "B",
+          "parent": "frontend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Component Developer",
+              "id": "frontend-component-developer",
+              "level": "C",
+              "parent": "frontend-ui-implementation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Layout and Responsive Developer",
+              "id": "frontend-layout-and-responsive-developer",
+              "level": "C",
+              "parent": "frontend-ui-implementation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Forms and Validation Developer",
+              "id": "frontend-forms-and-validation-developer",
+              "level": "C",
+              "parent": "frontend-ui-implementation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Design System Developer",
+              "id": "frontend-design-system-developer",
+              "level": "C",
+              "parent": "frontend-ui-implementation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Application Behaviour Lead",
+          "id": "frontend-application-behaviour-lead",
+          "level": "B",
+          "parent": "frontend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "State Management Specialist",
+              "id": "frontend-state-management-specialist",
+              "level": "C",
+              "parent": "frontend-application-behaviour-lead",
+              "read_only": false
+            },
+            {
+              "role": "Routing Specialist",
+              "id": "frontend-routing-specialist",
+              "level": "C",
+              "parent": "frontend-application-behaviour-lead",
+              "read_only": false
+            },
+            {
+              "role": "Client-Side Data Specialist",
+              "id": "frontend-client-side-data-specialist",
+              "level": "C",
+              "parent": "frontend-application-behaviour-lead",
+              "read_only": false
+            },
+            {
+              "role": "Error Handling Specialist",
+              "id": "frontend-error-handling-specialist",
+              "level": "C",
+              "parent": "frontend-application-behaviour-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Platform Integration Lead",
+          "id": "frontend-platform-integration-lead",
+          "level": "B",
+          "parent": "frontend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "API Integration Developer",
+              "id": "frontend-api-integration-developer",
+              "level": "C",
+              "parent": "frontend-platform-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Authentication Developer",
+              "id": "frontend-authentication-developer",
+              "level": "C",
+              "parent": "frontend-platform-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Caching Specialist",
+              "id": "frontend-caching-specialist",
+              "level": "C",
+              "parent": "frontend-platform-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Real-Time Communication Developer",
+              "id": "frontend-real-time-communication-developer",
+              "level": "C",
+              "parent": "frontend-platform-integration-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Frontend Quality Lead",
+          "id": "frontend-quality-lead",
+          "level": "B",
+          "parent": "frontend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Accessibility Tester",
+              "id": "frontend-accessibility-tester",
+              "level": "C",
+              "parent": "frontend-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Browser Compatibility Tester",
+              "id": "frontend-browser-compatibility-tester",
+              "level": "C",
+              "parent": "frontend-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Frontend Performance Specialist",
+              "id": "frontend-performance-specialist",
+              "level": "C",
+              "parent": "frontend-quality-lead",
+              "read_only": false
+            },
+            {
+              "role": "Component Test Developer",
+              "id": "frontend-component-test-developer",
+              "level": "C",
+              "parent": "frontend-quality-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "slug": "backend-api",
+      "folder": "06-backend-api-development",
+      "title": "Backend and API Development",
+      "optional": false,
+      "artifact": "a verified backend delivery pack covering domain behavior, API contracts, persistence, asynchronous processing, error recovery, security, tests, and performance",
+      "manager": {
+        "role": "Backend Manager",
+        "id": "backend-api-backend-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Domain Logic Lead",
+          "id": "backend-api-domain-logic-lead",
+          "level": "B",
+          "parent": "backend-api-backend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Domain Model Developer",
+              "id": "backend-api-domain-model-developer",
+              "level": "C",
+              "parent": "backend-api-domain-logic-lead",
+              "read_only": false
+            },
+            {
+              "role": "Business Rules Developer",
+              "id": "backend-api-business-rules-developer",
+              "level": "C",
+              "parent": "backend-api-domain-logic-lead",
+              "read_only": false
+            },
+            {
+              "role": "Workflow Developer",
+              "id": "backend-api-workflow-developer",
+              "level": "C",
+              "parent": "backend-api-domain-logic-lead",
+              "read_only": false
+            },
+            {
+              "role": "Validation Specialist",
+              "id": "backend-api-validation-specialist",
+              "level": "C",
+              "parent": "backend-api-domain-logic-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "API Lead",
+          "id": "backend-api-api-lead",
+          "level": "B",
+          "parent": "backend-api-backend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "REST API Developer",
+              "id": "backend-api-rest-api-developer",
+              "level": "C",
+              "parent": "backend-api-api-lead",
+              "read_only": false
+            },
+            {
+              "role": "GraphQL or RPC Specialist",
+              "id": "backend-api-graphql-or-rpc-specialist",
+              "level": "C",
+              "parent": "backend-api-api-lead",
+              "read_only": false
+            },
+            {
+              "role": "API Contract Specialist",
+              "id": "backend-api-api-contract-specialist",
+              "level": "C",
+              "parent": "backend-api-api-lead",
+              "read_only": false
+            },
+            {
+              "role": "API Versioning Specialist",
+              "id": "backend-api-api-versioning-specialist",
+              "level": "C",
+              "parent": "backend-api-api-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Processing and Persistence Lead",
+          "id": "backend-api-processing-and-persistence-lead",
+          "level": "B",
+          "parent": "backend-api-backend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Repository and ORM Developer",
+              "id": "backend-api-repository-and-orm-developer",
+              "level": "C",
+              "parent": "backend-api-processing-and-persistence-lead",
+              "read_only": false
+            },
+            {
+              "role": "Background Job Developer",
+              "id": "backend-api-background-job-developer",
+              "level": "C",
+              "parent": "backend-api-processing-and-persistence-lead",
+              "read_only": false
+            },
+            {
+              "role": "Queue and Event Developer",
+              "id": "backend-api-queue-and-event-developer",
+              "level": "C",
+              "parent": "backend-api-processing-and-persistence-lead",
+              "read_only": false
+            },
+            {
+              "role": "Cache Developer",
+              "id": "backend-api-cache-developer",
+              "level": "C",
+              "parent": "backend-api-processing-and-persistence-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Backend Quality Lead",
+          "id": "backend-api-backend-quality-lead",
+          "level": "B",
+          "parent": "backend-api-backend-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Integration Test Developer",
+              "id": "backend-api-integration-test-developer",
+              "level": "C",
+              "parent": "backend-api-backend-quality-lead",
+              "read_only": false
+            },
+            {
+              "role": "Error and Recovery Specialist",
+              "id": "backend-api-error-and-recovery-specialist",
+              "level": "C",
+              "parent": "backend-api-backend-quality-lead",
+              "read_only": false
+            },
+            {
+              "role": "Security Reviewer",
+              "id": "backend-api-security-reviewer",
+              "level": "C",
+              "parent": "backend-api-backend-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Backend Performance Specialist",
+              "id": "backend-api-backend-performance-specialist",
+              "level": "C",
+              "parent": "backend-api-backend-quality-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "slug": "database",
+      "folder": "07-database-development",
+      "title": "Database Development",
+      "optional": false,
+      "artifact": "a database delivery pack covering models, constraints, queries, indexes, transactions, migrations, integrity, rollback, recovery, capacity, and security",
+      "manager": {
+        "role": "Database Manager",
+        "id": "database-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Data Modelling Lead",
+          "id": "database-data-modelling-lead",
+          "level": "B",
+          "parent": "database-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Relational Schema Designer",
+              "id": "database-relational-schema-designer",
+              "level": "C",
+              "parent": "database-data-modelling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Document Data Designer",
+              "id": "database-document-data-designer",
+              "level": "C",
+              "parent": "database-data-modelling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Domain Normalisation Specialist",
+              "id": "database-domain-normalisation-specialist",
+              "level": "C",
+              "parent": "database-data-modelling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Constraint Specialist",
+              "id": "database-data-constraint-specialist",
+              "level": "C",
+              "parent": "database-data-modelling-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Query and Access Lead",
+          "id": "database-query-and-access-lead",
+          "level": "B",
+          "parent": "database-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Query Developer",
+              "id": "database-query-developer",
+              "level": "C",
+              "parent": "database-query-and-access-lead",
+              "read_only": false
+            },
+            {
+              "role": "Indexing Specialist",
+              "id": "database-indexing-specialist",
+              "level": "C",
+              "parent": "database-query-and-access-lead",
+              "read_only": false
+            },
+            {
+              "role": "ORM Specialist",
+              "id": "database-orm-specialist",
+              "level": "C",
+              "parent": "database-query-and-access-lead",
+              "read_only": false
+            },
+            {
+              "role": "Transaction Specialist",
+              "id": "database-transaction-specialist",
+              "level": "C",
+              "parent": "database-query-and-access-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Migration and Integrity Lead",
+          "id": "database-migration-and-integrity-lead",
+          "level": "B",
+          "parent": "database-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Migration Developer",
+              "id": "database-migration-developer",
+              "level": "C",
+              "parent": "database-migration-and-integrity-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Validation Specialist",
+              "id": "database-data-validation-specialist",
+              "level": "C",
+              "parent": "database-migration-and-integrity-lead",
+              "read_only": false
+            },
+            {
+              "role": "Backfill Developer",
+              "id": "database-backfill-developer",
+              "level": "C",
+              "parent": "database-migration-and-integrity-lead",
+              "read_only": false
+            },
+            {
+              "role": "Rollback Specialist",
+              "id": "database-rollback-specialist",
+              "level": "C",
+              "parent": "database-migration-and-integrity-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Database Operations Lead",
+          "id": "database-operations-lead",
+          "level": "B",
+          "parent": "database-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Backup and Recovery Specialist",
+              "id": "database-backup-and-recovery-specialist",
+              "level": "C",
+              "parent": "database-operations-lead",
+              "read_only": false
+            },
+            {
+              "role": "Replication Specialist",
+              "id": "database-replication-specialist",
+              "level": "C",
+              "parent": "database-operations-lead",
+              "read_only": false
+            },
+            {
+              "role": "Capacity Planner",
+              "id": "database-capacity-planner",
+              "level": "C",
+              "parent": "database-operations-lead",
+              "read_only": true
+            },
+            {
+              "role": "Database Security Specialist",
+              "id": "database-security-specialist",
+              "level": "C",
+              "parent": "database-operations-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "slug": "data-engineering",
+      "folder": "08-data-engineering-analytics",
+      "title": "Data Engineering and Analytics",
+      "optional": false,
+      "artifact": "a data delivery pack covering sources, contracts, ingestion, transformation, quality, storage, models, lineage, metrics, reports, and validation",
+      "manager": {
+        "role": "Data Engineering Manager",
+        "id": "data-engineering-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Data Acquisition Lead",
+          "id": "data-engineering-data-acquisition-lead",
+          "level": "B",
+          "parent": "data-engineering-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Source Connector Developer",
+              "id": "data-engineering-source-connector-developer",
+              "level": "C",
+              "parent": "data-engineering-data-acquisition-lead",
+              "read_only": false
+            },
+            {
+              "role": "Ingestion Pipeline Developer",
+              "id": "data-engineering-ingestion-pipeline-developer",
+              "level": "C",
+              "parent": "data-engineering-data-acquisition-lead",
+              "read_only": false
+            },
+            {
+              "role": "Streaming Data Developer",
+              "id": "data-engineering-streaming-data-developer",
+              "level": "C",
+              "parent": "data-engineering-data-acquisition-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Contract Specialist",
+              "id": "data-engineering-data-contract-specialist",
+              "level": "C",
+              "parent": "data-engineering-data-acquisition-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Transformation Lead",
+          "id": "data-engineering-transformation-lead",
+          "level": "B",
+          "parent": "data-engineering-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "ETL/ELT Developer",
+              "id": "data-engineering-etl-elt-developer",
+              "level": "C",
+              "parent": "data-engineering-transformation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Cleaning Specialist",
+              "id": "data-engineering-data-cleaning-specialist",
+              "level": "C",
+              "parent": "data-engineering-transformation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Schema Evolution Specialist",
+              "id": "data-engineering-schema-evolution-specialist",
+              "level": "C",
+              "parent": "data-engineering-transformation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Quality Engineer",
+              "id": "data-engineering-data-quality-engineer",
+              "level": "C",
+              "parent": "data-engineering-transformation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Storage and Modelling Lead",
+          "id": "data-engineering-storage-and-modelling-lead",
+          "level": "B",
+          "parent": "data-engineering-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Warehouse Designer",
+              "id": "data-engineering-warehouse-designer",
+              "level": "C",
+              "parent": "data-engineering-storage-and-modelling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Lakehouse Designer",
+              "id": "data-engineering-lakehouse-designer",
+              "level": "C",
+              "parent": "data-engineering-storage-and-modelling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Analytics Model Developer",
+              "id": "data-engineering-analytics-model-developer",
+              "level": "C",
+              "parent": "data-engineering-storage-and-modelling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Metadata and Lineage Specialist",
+              "id": "data-engineering-metadata-and-lineage-specialist",
+              "level": "C",
+              "parent": "data-engineering-storage-and-modelling-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Analytics Delivery Lead",
+          "id": "data-engineering-analytics-delivery-lead",
+          "level": "B",
+          "parent": "data-engineering-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Metrics Developer",
+              "id": "data-engineering-metrics-developer",
+              "level": "C",
+              "parent": "data-engineering-analytics-delivery-lead",
+              "read_only": false
+            },
+            {
+              "role": "Dashboard Developer",
+              "id": "data-engineering-dashboard-developer",
+              "level": "C",
+              "parent": "data-engineering-analytics-delivery-lead",
+              "read_only": false
+            },
+            {
+              "role": "Reporting Developer",
+              "id": "data-engineering-reporting-developer",
+              "level": "C",
+              "parent": "data-engineering-analytics-delivery-lead",
+              "read_only": false
+            },
+            {
+              "role": "Analytics Validation Specialist",
+              "id": "data-engineering-analytics-validation-specialist",
+              "level": "C",
+              "parent": "data-engineering-analytics-delivery-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "slug": "ai-ml",
+      "folder": "09-ai-machine-learning",
+      "title": "AI and Machine Learning",
+      "optional": false,
+      "artifact": "an AI/ML delivery pack covering dataset provenance, training, evaluation, bias and robustness, deployment, versioning, optimization, and monitoring",
+      "manager": {
+        "role": "AI/ML Manager",
+        "id": "ai-ml-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Data and Dataset Lead",
+          "id": "ai-ml-data-and-dataset-lead",
+          "level": "B",
+          "parent": "ai-ml-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Dataset Curator",
+              "id": "ai-ml-dataset-curator",
+              "level": "C",
+              "parent": "ai-ml-data-and-dataset-lead",
+              "read_only": false
+            },
+            {
+              "role": "Labelling Specialist",
+              "id": "ai-ml-labelling-specialist",
+              "level": "C",
+              "parent": "ai-ml-data-and-dataset-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Quality Analyst",
+              "id": "ai-ml-data-quality-analyst",
+              "level": "C",
+              "parent": "ai-ml-data-and-dataset-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dataset Bias Analyst",
+              "id": "ai-ml-dataset-bias-analyst",
+              "level": "C",
+              "parent": "ai-ml-data-and-dataset-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Model Development Lead",
+          "id": "ai-ml-model-development-lead",
+          "level": "B",
+          "parent": "ai-ml-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Model Researcher",
+              "id": "ai-ml-model-researcher",
+              "level": "C",
+              "parent": "ai-ml-model-development-lead",
+              "read_only": true
+            },
+            {
+              "role": "Training Engineer",
+              "id": "ai-ml-training-engineer",
+              "level": "C",
+              "parent": "ai-ml-model-development-lead",
+              "read_only": false
+            },
+            {
+              "role": "Fine-Tuning Specialist",
+              "id": "ai-ml-fine-tuning-specialist",
+              "level": "C",
+              "parent": "ai-ml-model-development-lead",
+              "read_only": false
+            },
+            {
+              "role": "Feature Engineering Specialist",
+              "id": "ai-ml-feature-engineering-specialist",
+              "level": "C",
+              "parent": "ai-ml-model-development-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Evaluation Lead",
+          "id": "ai-ml-evaluation-lead",
+          "level": "B",
+          "parent": "ai-ml-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Benchmark Designer",
+              "id": "ai-ml-benchmark-designer",
+              "level": "C",
+              "parent": "ai-ml-evaluation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Error Analysis Specialist",
+              "id": "ai-ml-error-analysis-specialist",
+              "level": "C",
+              "parent": "ai-ml-evaluation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Robustness Tester",
+              "id": "ai-ml-robustness-tester",
+              "level": "C",
+              "parent": "ai-ml-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Human Evaluation Coordinator",
+              "id": "ai-ml-human-evaluation-coordinator",
+              "level": "C",
+              "parent": "ai-ml-evaluation-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Model Deployment Lead",
+          "id": "ai-ml-model-deployment-lead",
+          "level": "B",
+          "parent": "ai-ml-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Inference Engineer",
+              "id": "ai-ml-inference-engineer",
+              "level": "C",
+              "parent": "ai-ml-model-deployment-lead",
+              "read_only": false
+            },
+            {
+              "role": "Model Optimisation Specialist",
+              "id": "ai-ml-model-optimisation-specialist",
+              "level": "C",
+              "parent": "ai-ml-model-deployment-lead",
+              "read_only": false
+            },
+            {
+              "role": "Model Monitoring Specialist",
+              "id": "ai-ml-model-monitoring-specialist",
+              "level": "C",
+              "parent": "ai-ml-model-deployment-lead",
+              "read_only": false
+            },
+            {
+              "role": "Model Versioning Specialist",
+              "id": "ai-ml-model-versioning-specialist",
+              "level": "C",
+              "parent": "ai-ml-model-deployment-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "slug": "llm-rag",
+      "folder": "10-llm-rag-development",
+      "title": "LLM and RAG Development",
+      "optional": false,
+      "artifact": "an LLM system delivery pack covering retrieval, context, prompts, structured outputs, evaluation, routing, cost, caching, traces, and operational safeguards",
+      "manager": {
+        "role": "LLM Systems Manager",
+        "id": "llm-rag-llm-systems-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Knowledge and Retrieval Lead",
+          "id": "llm-rag-knowledge-and-retrieval-lead",
+          "level": "B",
+          "parent": "llm-rag-llm-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Document Processing Specialist",
+              "id": "llm-rag-document-processing-specialist",
+              "level": "C",
+              "parent": "llm-rag-knowledge-and-retrieval-lead",
+              "read_only": false
+            },
+            {
+              "role": "Chunking Specialist",
+              "id": "llm-rag-chunking-specialist",
+              "level": "C",
+              "parent": "llm-rag-knowledge-and-retrieval-lead",
+              "read_only": false
+            },
+            {
+              "role": "Embedding Specialist",
+              "id": "llm-rag-embedding-specialist",
+              "level": "C",
+              "parent": "llm-rag-knowledge-and-retrieval-lead",
+              "read_only": false
+            },
+            {
+              "role": "Retrieval and Reranking Specialist",
+              "id": "llm-rag-retrieval-and-reranking-specialist",
+              "level": "C",
+              "parent": "llm-rag-knowledge-and-retrieval-lead",
+              "read_only": false
+            },
+            {
+              "role": "Knowledge Graph Specialist",
+              "id": "llm-rag-knowledge-graph-specialist",
+              "level": "C",
+              "parent": "llm-rag-knowledge-and-retrieval-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Prompt and Context Lead",
+          "id": "llm-rag-prompt-and-context-lead",
+          "level": "B",
+          "parent": "llm-rag-llm-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "System Prompt Designer",
+              "id": "llm-rag-system-prompt-designer",
+              "level": "C",
+              "parent": "llm-rag-prompt-and-context-lead",
+              "read_only": false
+            },
+            {
+              "role": "Context Assembly Specialist",
+              "id": "llm-rag-context-assembly-specialist",
+              "level": "C",
+              "parent": "llm-rag-prompt-and-context-lead",
+              "read_only": false
+            },
+            {
+              "role": "Structured Output Specialist",
+              "id": "llm-rag-structured-output-specialist",
+              "level": "C",
+              "parent": "llm-rag-prompt-and-context-lead",
+              "read_only": false
+            },
+            {
+              "role": "Conversation State Specialist",
+              "id": "llm-rag-conversation-state-specialist",
+              "level": "C",
+              "parent": "llm-rag-prompt-and-context-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "LLM Evaluation Lead",
+          "id": "llm-rag-llm-evaluation-lead",
+          "level": "B",
+          "parent": "llm-rag-llm-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Accuracy Evaluator",
+              "id": "llm-rag-accuracy-evaluator",
+              "level": "C",
+              "parent": "llm-rag-llm-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Hallucination Evaluator",
+              "id": "llm-rag-hallucination-evaluator",
+              "level": "C",
+              "parent": "llm-rag-llm-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Retrieval Evaluator",
+              "id": "llm-rag-retrieval-evaluator",
+              "level": "C",
+              "parent": "llm-rag-llm-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Adversarial Evaluator",
+              "id": "llm-rag-adversarial-evaluator",
+              "level": "C",
+              "parent": "llm-rag-llm-evaluation-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "LLM Operations Lead",
+          "id": "llm-rag-llm-operations-lead",
+          "level": "B",
+          "parent": "llm-rag-llm-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Model Router Developer",
+              "id": "llm-rag-model-router-developer",
+              "level": "C",
+              "parent": "llm-rag-llm-operations-lead",
+              "read_only": false
+            },
+            {
+              "role": "Token and Cost Optimiser",
+              "id": "llm-rag-token-and-cost-optimiser",
+              "level": "C",
+              "parent": "llm-rag-llm-operations-lead",
+              "read_only": false
+            },
+            {
+              "role": "Cache Developer",
+              "id": "llm-rag-cache-developer",
+              "level": "C",
+              "parent": "llm-rag-llm-operations-lead",
+              "read_only": false
+            },
+            {
+              "role": "Trace and Monitoring Specialist",
+              "id": "llm-rag-trace-and-monitoring-specialist",
+              "level": "C",
+              "parent": "llm-rag-llm-operations-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "slug": "agentic-systems",
+      "folder": "11-agentic-multi-agent-systems",
+      "title": "AI Agent and Multi-Agent Development",
+      "optional": false,
+      "artifact": "an agent-system delivery pack covering roles, delegation, state, termination, tools, permissions, memory, provenance, evaluation, deadlock prevention, and safety",
+      "manager": {
+        "role": "Agentic Systems Manager",
+        "id": "agentic-systems-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Agent Architecture Lead",
+          "id": "agentic-systems-agent-architecture-lead",
+          "level": "B",
+          "parent": "agentic-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Role and Responsibility Designer",
+              "id": "agentic-systems-role-and-responsibility-designer",
+              "level": "C",
+              "parent": "agentic-systems-agent-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Delegation Designer",
+              "id": "agentic-systems-delegation-designer",
+              "level": "C",
+              "parent": "agentic-systems-agent-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "State Machine Designer",
+              "id": "agentic-systems-state-machine-designer",
+              "level": "C",
+              "parent": "agentic-systems-agent-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Termination and Escalation Designer",
+              "id": "agentic-systems-termination-and-escalation-designer",
+              "level": "C",
+              "parent": "agentic-systems-agent-architecture-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Tooling Lead",
+          "id": "agentic-systems-tooling-lead",
+          "level": "B",
+          "parent": "agentic-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "MCP Tool Developer",
+              "id": "agentic-systems-mcp-tool-developer",
+              "level": "C",
+              "parent": "agentic-systems-tooling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Agent Skill Developer",
+              "id": "agentic-systems-agent-skill-developer",
+              "level": "C",
+              "parent": "agentic-systems-tooling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Tool Permission Specialist",
+              "id": "agentic-systems-tool-permission-specialist",
+              "level": "C",
+              "parent": "agentic-systems-tooling-lead",
+              "read_only": false
+            },
+            {
+              "role": "Tool Error-Recovery Specialist",
+              "id": "agentic-systems-tool-error-recovery-specialist",
+              "level": "C",
+              "parent": "agentic-systems-tooling-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Context and Memory Lead",
+          "id": "agentic-systems-context-and-memory-lead",
+          "level": "B",
+          "parent": "agentic-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Working Memory Designer",
+              "id": "agentic-systems-working-memory-designer",
+              "level": "C",
+              "parent": "agentic-systems-context-and-memory-lead",
+              "read_only": false
+            },
+            {
+              "role": "Long-Term Memory Designer",
+              "id": "agentic-systems-long-term-memory-designer",
+              "level": "C",
+              "parent": "agentic-systems-context-and-memory-lead",
+              "read_only": false
+            },
+            {
+              "role": "Context Compression Specialist",
+              "id": "agentic-systems-context-compression-specialist",
+              "level": "C",
+              "parent": "agentic-systems-context-and-memory-lead",
+              "read_only": false
+            },
+            {
+              "role": "Provenance Specialist",
+              "id": "agentic-systems-provenance-specialist",
+              "level": "C",
+              "parent": "agentic-systems-context-and-memory-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Agent Evaluation Lead",
+          "id": "agentic-systems-agent-evaluation-lead",
+          "level": "B",
+          "parent": "agentic-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Task Completion Evaluator",
+              "id": "agentic-systems-task-completion-evaluator",
+              "level": "C",
+              "parent": "agentic-systems-agent-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Delegation Quality Evaluator",
+              "id": "agentic-systems-delegation-quality-evaluator",
+              "level": "C",
+              "parent": "agentic-systems-agent-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Tool-Use Evaluator",
+              "id": "agentic-systems-tool-use-evaluator",
+              "level": "C",
+              "parent": "agentic-systems-agent-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Loop and Deadlock Tester",
+              "id": "agentic-systems-loop-and-deadlock-tester",
+              "level": "C",
+              "parent": "agentic-systems-agent-evaluation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Safety and Permission Tester",
+              "id": "agentic-systems-safety-and-permission-tester",
+              "level": "C",
+              "parent": "agentic-systems-agent-evaluation-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 12,
+      "slug": "integrations",
+      "folder": "12-mcp-external-integrations",
+      "title": "MCP and External Integrations",
+      "optional": false,
+      "artifact": "an integration delivery pack covering capabilities, authentication, limits, connectors, events, idempotency, failure behavior, contracts, mocks, secrets, and permissions",
+      "manager": {
+        "role": "Integration Manager",
+        "id": "integrations-integration-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "External System Discovery Lead",
+          "id": "integrations-external-system-discovery-lead",
+          "level": "B",
+          "parent": "integrations-integration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "API Documentation Researcher",
+              "id": "integrations-api-documentation-researcher",
+              "level": "C",
+              "parent": "integrations-external-system-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Authentication Researcher",
+              "id": "integrations-authentication-researcher",
+              "level": "C",
+              "parent": "integrations-external-system-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Capability Mapper",
+              "id": "integrations-capability-mapper",
+              "level": "C",
+              "parent": "integrations-external-system-discovery-lead",
+              "read_only": true
+            },
+            {
+              "role": "Rate Limit and Constraint Analyst",
+              "id": "integrations-rate-limit-and-constraint-analyst",
+              "level": "C",
+              "parent": "integrations-external-system-discovery-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Connector Development Lead",
+          "id": "integrations-connector-development-lead",
+          "level": "B",
+          "parent": "integrations-integration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "REST Connector Developer",
+              "id": "integrations-rest-connector-developer",
+              "level": "C",
+              "parent": "integrations-connector-development-lead",
+              "read_only": false
+            },
+            {
+              "role": "GraphQL Connector Developer",
+              "id": "integrations-graphql-connector-developer",
+              "level": "C",
+              "parent": "integrations-connector-development-lead",
+              "read_only": false
+            },
+            {
+              "role": "SDK Integration Developer",
+              "id": "integrations-sdk-integration-developer",
+              "level": "C",
+              "parent": "integrations-connector-development-lead",
+              "read_only": false
+            },
+            {
+              "role": "MCP Server Developer",
+              "id": "integrations-mcp-server-developer",
+              "level": "C",
+              "parent": "integrations-connector-development-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Event Integration Lead",
+          "id": "integrations-event-integration-lead",
+          "level": "B",
+          "parent": "integrations-integration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Webhook Developer",
+              "id": "integrations-webhook-developer",
+              "level": "C",
+              "parent": "integrations-event-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Queue Integration Developer",
+              "id": "integrations-queue-integration-developer",
+              "level": "C",
+              "parent": "integrations-event-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Event Schema Specialist",
+              "id": "integrations-event-schema-specialist",
+              "level": "C",
+              "parent": "integrations-event-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Retry and Idempotency Specialist",
+              "id": "integrations-retry-and-idempotency-specialist",
+              "level": "C",
+              "parent": "integrations-event-integration-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Integration Quality Lead",
+          "id": "integrations-integration-quality-lead",
+          "level": "B",
+          "parent": "integrations-integration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Contract Test Developer",
+              "id": "integrations-contract-test-developer",
+              "level": "C",
+              "parent": "integrations-integration-quality-lead",
+              "read_only": false
+            },
+            {
+              "role": "Mock Service Developer",
+              "id": "integrations-mock-service-developer",
+              "level": "C",
+              "parent": "integrations-integration-quality-lead",
+              "read_only": false
+            },
+            {
+              "role": "Failure Simulation Specialist",
+              "id": "integrations-failure-simulation-specialist",
+              "level": "C",
+              "parent": "integrations-integration-quality-lead",
+              "read_only": false
+            },
+            {
+              "role": "Secrets and Permissions Reviewer",
+              "id": "integrations-secrets-and-permissions-reviewer",
+              "level": "C",
+              "parent": "integrations-integration-quality-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 13,
+      "slug": "mobile",
+      "folder": "13-mobile-development",
+      "title": "Mobile Development",
+      "optional": false,
+      "artifact": "a verified mobile delivery pack covering architecture, UI, device features, offline behavior, synchronization, compatibility, accessibility, performance, and store requirements",
+      "manager": {
+        "role": "Mobile Development Manager",
+        "id": "mobile-development-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Mobile Architecture Lead",
+          "id": "mobile-architecture-lead",
+          "level": "B",
+          "parent": "mobile-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Native Platform Specialist",
+              "id": "mobile-native-platform-specialist",
+              "level": "C",
+              "parent": "mobile-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Cross-Platform Specialist",
+              "id": "mobile-cross-platform-specialist",
+              "level": "C",
+              "parent": "mobile-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Offline Data Specialist",
+              "id": "mobile-offline-data-specialist",
+              "level": "C",
+              "parent": "mobile-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Mobile Navigation Specialist",
+              "id": "mobile-navigation-specialist",
+              "level": "C",
+              "parent": "mobile-architecture-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Mobile Feature Lead",
+          "id": "mobile-feature-lead",
+          "level": "B",
+          "parent": "mobile-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "UI Developer",
+              "id": "mobile-ui-developer",
+              "level": "C",
+              "parent": "mobile-feature-lead",
+              "read_only": false
+            },
+            {
+              "role": "Device Capability Developer",
+              "id": "mobile-device-capability-developer",
+              "level": "C",
+              "parent": "mobile-feature-lead",
+              "read_only": false
+            },
+            {
+              "role": "Notifications Developer",
+              "id": "mobile-notifications-developer",
+              "level": "C",
+              "parent": "mobile-feature-lead",
+              "read_only": false
+            },
+            {
+              "role": "Background Processing Developer",
+              "id": "mobile-background-processing-developer",
+              "level": "C",
+              "parent": "mobile-feature-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Mobile Integration Lead",
+          "id": "mobile-integration-lead",
+          "level": "B",
+          "parent": "mobile-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "API Integration Developer",
+              "id": "mobile-api-integration-developer",
+              "level": "C",
+              "parent": "mobile-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Authentication Specialist",
+              "id": "mobile-authentication-specialist",
+              "level": "C",
+              "parent": "mobile-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Local Storage Developer",
+              "id": "mobile-local-storage-developer",
+              "level": "C",
+              "parent": "mobile-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Synchronisation Specialist",
+              "id": "mobile-synchronisation-specialist",
+              "level": "C",
+              "parent": "mobile-integration-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Mobile Quality Lead",
+          "id": "mobile-quality-lead",
+          "level": "B",
+          "parent": "mobile-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Device Compatibility Tester",
+              "id": "mobile-device-compatibility-tester",
+              "level": "C",
+              "parent": "mobile-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Battery and Performance Tester",
+              "id": "mobile-battery-and-performance-tester",
+              "level": "C",
+              "parent": "mobile-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Accessibility Tester",
+              "id": "mobile-accessibility-tester",
+              "level": "C",
+              "parent": "mobile-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Store Compliance Reviewer",
+              "id": "mobile-store-compliance-reviewer",
+              "level": "C",
+              "parent": "mobile-quality-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "slug": "desktop",
+      "folder": "14-desktop-development",
+      "title": "Desktop Development",
+      "optional": false,
+      "artifact": "a verified desktop delivery pack covering architecture, operating-system integration, local data, packaging, signing, updates, distribution, compatibility, and installation",
+      "manager": {
+        "role": "Desktop Development Manager",
+        "id": "desktop-development-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Desktop Architecture Lead",
+          "id": "desktop-architecture-lead",
+          "level": "B",
+          "parent": "desktop-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Native Desktop Specialist",
+              "id": "desktop-native-desktop-specialist",
+              "level": "C",
+              "parent": "desktop-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Electron or Webview Specialist",
+              "id": "desktop-electron-or-webview-specialist",
+              "level": "C",
+              "parent": "desktop-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Local Data Specialist",
+              "id": "desktop-local-data-specialist",
+              "level": "C",
+              "parent": "desktop-architecture-lead",
+              "read_only": false
+            },
+            {
+              "role": "Inter-Process Communication Specialist",
+              "id": "desktop-inter-process-communication-specialist",
+              "level": "C",
+              "parent": "desktop-architecture-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Operating-System Integration Lead",
+          "id": "desktop-operating-system-integration-lead",
+          "level": "B",
+          "parent": "desktop-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "File System Developer",
+              "id": "desktop-file-system-developer",
+              "level": "C",
+              "parent": "desktop-operating-system-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "System Tray and Notification Developer",
+              "id": "desktop-system-tray-and-notification-developer",
+              "level": "C",
+              "parent": "desktop-operating-system-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Protocol and File Association Developer",
+              "id": "desktop-protocol-and-file-association-developer",
+              "level": "C",
+              "parent": "desktop-operating-system-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Native Permission Specialist",
+              "id": "desktop-native-permission-specialist",
+              "level": "C",
+              "parent": "desktop-operating-system-integration-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Packaging Lead",
+          "id": "desktop-packaging-lead",
+          "level": "B",
+          "parent": "desktop-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Installer Developer",
+              "id": "desktop-installer-developer",
+              "level": "C",
+              "parent": "desktop-packaging-lead",
+              "read_only": false
+            },
+            {
+              "role": "Auto-Update Developer",
+              "id": "desktop-auto-update-developer",
+              "level": "C",
+              "parent": "desktop-packaging-lead",
+              "read_only": false
+            },
+            {
+              "role": "Code Signing Specialist",
+              "id": "desktop-code-signing-specialist",
+              "level": "C",
+              "parent": "desktop-packaging-lead",
+              "read_only": false
+            },
+            {
+              "role": "Distribution Specialist",
+              "id": "desktop-distribution-specialist",
+              "level": "C",
+              "parent": "desktop-packaging-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Desktop Quality Lead",
+          "id": "desktop-quality-lead",
+          "level": "B",
+          "parent": "desktop-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "OS Compatibility Tester",
+              "id": "desktop-os-compatibility-tester",
+              "level": "C",
+              "parent": "desktop-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Upgrade Tester",
+              "id": "desktop-upgrade-tester",
+              "level": "C",
+              "parent": "desktop-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Resource Usage Tester",
+              "id": "desktop-resource-usage-tester",
+              "level": "C",
+              "parent": "desktop-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Installation Tester",
+              "id": "desktop-installation-tester",
+              "level": "C",
+              "parent": "desktop-quality-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 15,
+      "slug": "security",
+      "folder": "15-security-engineering",
+      "title": "Security Engineering",
+      "optional": false,
+      "artifact": "a security pack covering assets, trust boundaries, threats, abuse cases, application and infrastructure controls, testing evidence, risk ranking, and remediation verification",
+      "manager": {
+        "role": "Security Manager",
+        "id": "security-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Threat Modelling Lead",
+          "id": "security-threat-modelling-lead",
+          "level": "B",
+          "parent": "security-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Asset and Trust Boundary Analyst",
+              "id": "security-asset-and-trust-boundary-analyst",
+              "level": "C",
+              "parent": "security-threat-modelling-lead",
+              "read_only": true
+            },
+            {
+              "role": "Attack Surface Analyst",
+              "id": "security-attack-surface-analyst",
+              "level": "C",
+              "parent": "security-threat-modelling-lead",
+              "read_only": true
+            },
+            {
+              "role": "Abuse Case Analyst",
+              "id": "security-abuse-case-analyst",
+              "level": "C",
+              "parent": "security-threat-modelling-lead",
+              "read_only": true
+            },
+            {
+              "role": "Threat Prioritisation Analyst",
+              "id": "security-threat-prioritisation-analyst",
+              "level": "C",
+              "parent": "security-threat-modelling-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Application Security Lead",
+          "id": "security-application-security-lead",
+          "level": "B",
+          "parent": "security-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Authentication Reviewer",
+              "id": "security-authentication-reviewer",
+              "level": "C",
+              "parent": "security-application-security-lead",
+              "read_only": true
+            },
+            {
+              "role": "Authorisation Reviewer",
+              "id": "security-authorisation-reviewer",
+              "level": "C",
+              "parent": "security-application-security-lead",
+              "read_only": true
+            },
+            {
+              "role": "Input Validation Reviewer",
+              "id": "security-input-validation-reviewer",
+              "level": "C",
+              "parent": "security-application-security-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dependency Security Reviewer",
+              "id": "security-dependency-security-reviewer",
+              "level": "C",
+              "parent": "security-application-security-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Infrastructure Security Lead",
+          "id": "security-infrastructure-security-lead",
+          "level": "B",
+          "parent": "security-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Cloud Permission Reviewer",
+              "id": "security-cloud-permission-reviewer",
+              "level": "C",
+              "parent": "security-infrastructure-security-lead",
+              "read_only": true
+            },
+            {
+              "role": "Network Security Reviewer",
+              "id": "security-network-security-reviewer",
+              "level": "C",
+              "parent": "security-infrastructure-security-lead",
+              "read_only": true
+            },
+            {
+              "role": "Secrets Management Reviewer",
+              "id": "security-secrets-management-reviewer",
+              "level": "C",
+              "parent": "security-infrastructure-security-lead",
+              "read_only": true
+            },
+            {
+              "role": "Container Security Reviewer",
+              "id": "security-container-security-reviewer",
+              "level": "C",
+              "parent": "security-infrastructure-security-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Security Testing Lead",
+          "id": "security-testing-lead",
+          "level": "B",
+          "parent": "security-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Static Analysis Specialist",
+              "id": "security-static-analysis-specialist",
+              "level": "C",
+              "parent": "security-testing-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dynamic Analysis Specialist",
+              "id": "security-dynamic-analysis-specialist",
+              "level": "C",
+              "parent": "security-testing-lead",
+              "read_only": true
+            },
+            {
+              "role": "Penetration Test Planner",
+              "id": "security-penetration-test-planner",
+              "level": "C",
+              "parent": "security-testing-lead",
+              "read_only": true
+            },
+            {
+              "role": "Remediation Verifier",
+              "id": "security-remediation-verifier",
+              "level": "C",
+              "parent": "security-testing-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "slug": "qa",
+      "folder": "16-testing-quality-assurance",
+      "title": "Testing and Quality Assurance",
+      "optional": false,
+      "artifact": "a quality pack covering risk-based strategy, environments, automated and non-functional coverage, regressions, flakiness, gaps, and release readiness",
+      "manager": {
+        "role": "QA Manager",
+        "id": "qa-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Test Strategy Lead",
+          "id": "qa-test-strategy-lead",
+          "level": "B",
+          "parent": "qa-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Risk-Based Test Analyst",
+              "id": "qa-risk-based-test-analyst",
+              "level": "C",
+              "parent": "qa-test-strategy-lead",
+              "read_only": true
+            },
+            {
+              "role": "Test Coverage Analyst",
+              "id": "qa-test-coverage-analyst",
+              "level": "C",
+              "parent": "qa-test-strategy-lead",
+              "read_only": true
+            },
+            {
+              "role": "Acceptance Test Designer",
+              "id": "qa-acceptance-test-designer",
+              "level": "C",
+              "parent": "qa-test-strategy-lead",
+              "read_only": false
+            },
+            {
+              "role": "Test Environment Planner",
+              "id": "qa-test-environment-planner",
+              "level": "C",
+              "parent": "qa-test-strategy-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Automated Testing Lead",
+          "id": "qa-automated-testing-lead",
+          "level": "B",
+          "parent": "qa-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Unit Test Developer",
+              "id": "qa-unit-test-developer",
+              "level": "C",
+              "parent": "qa-automated-testing-lead",
+              "read_only": false
+            },
+            {
+              "role": "Integration Test Developer",
+              "id": "qa-integration-test-developer",
+              "level": "C",
+              "parent": "qa-automated-testing-lead",
+              "read_only": false
+            },
+            {
+              "role": "End-to-End Test Developer",
+              "id": "qa-end-to-end-test-developer",
+              "level": "C",
+              "parent": "qa-automated-testing-lead",
+              "read_only": false
+            },
+            {
+              "role": "Contract Test Developer",
+              "id": "qa-contract-test-developer",
+              "level": "C",
+              "parent": "qa-automated-testing-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Non-Functional Testing Lead",
+          "id": "qa-non-functional-testing-lead",
+          "level": "B",
+          "parent": "qa-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Performance Tester",
+              "id": "qa-performance-tester",
+              "level": "C",
+              "parent": "qa-non-functional-testing-lead",
+              "read_only": true
+            },
+            {
+              "role": "Security Tester",
+              "id": "qa-security-tester",
+              "level": "C",
+              "parent": "qa-non-functional-testing-lead",
+              "read_only": true
+            },
+            {
+              "role": "Accessibility Tester",
+              "id": "qa-accessibility-tester",
+              "level": "C",
+              "parent": "qa-non-functional-testing-lead",
+              "read_only": true
+            },
+            {
+              "role": "Resilience Tester",
+              "id": "qa-resilience-tester",
+              "level": "C",
+              "parent": "qa-non-functional-testing-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Quality Review Lead",
+          "id": "qa-quality-review-lead",
+          "level": "B",
+          "parent": "qa-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Regression Analyst",
+              "id": "qa-regression-analyst",
+              "level": "C",
+              "parent": "qa-quality-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Test Flakiness Analyst",
+              "id": "qa-test-flakiness-analyst",
+              "level": "C",
+              "parent": "qa-quality-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Coverage Gap Analyst",
+              "id": "qa-coverage-gap-analyst",
+              "level": "C",
+              "parent": "qa-quality-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Release Readiness Reviewer",
+              "id": "qa-release-readiness-reviewer",
+              "level": "C",
+              "parent": "qa-quality-review-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 17,
+      "slug": "performance",
+      "folder": "17-performance-engineering",
+      "title": "Performance Engineering",
+      "optional": false,
+      "artifact": "a performance pack with reproducible baselines, profiles, benchmarks, bottlenecks, improvements, regressions, capacity limits, and cost-performance trade-offs",
+      "manager": {
+        "role": "Performance Manager",
+        "id": "performance-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Measurement Lead",
+          "id": "performance-measurement-lead",
+          "level": "B",
+          "parent": "performance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Profiling Specialist",
+              "id": "performance-profiling-specialist",
+              "level": "C",
+              "parent": "performance-measurement-lead",
+              "read_only": false
+            },
+            {
+              "role": "Benchmark Designer",
+              "id": "performance-benchmark-designer",
+              "level": "C",
+              "parent": "performance-measurement-lead",
+              "read_only": false
+            },
+            {
+              "role": "Load Test Developer",
+              "id": "performance-load-test-developer",
+              "level": "C",
+              "parent": "performance-measurement-lead",
+              "read_only": false
+            },
+            {
+              "role": "Baseline Analyst",
+              "id": "performance-baseline-analyst",
+              "level": "C",
+              "parent": "performance-measurement-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Application Performance Lead",
+          "id": "performance-application-performance-lead",
+          "level": "B",
+          "parent": "performance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "CPU Optimisation Specialist",
+              "id": "performance-cpu-optimisation-specialist",
+              "level": "C",
+              "parent": "performance-application-performance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Memory Optimisation Specialist",
+              "id": "performance-memory-optimisation-specialist",
+              "level": "C",
+              "parent": "performance-application-performance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Concurrency Specialist",
+              "id": "performance-concurrency-specialist",
+              "level": "C",
+              "parent": "performance-application-performance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Algorithmic Complexity Reviewer",
+              "id": "performance-algorithmic-complexity-reviewer",
+              "level": "C",
+              "parent": "performance-application-performance-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Data and Network Performance Lead",
+          "id": "performance-data-and-network-performance-lead",
+          "level": "B",
+          "parent": "performance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Database Query Optimiser",
+              "id": "performance-database-query-optimiser",
+              "level": "C",
+              "parent": "performance-data-and-network-performance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Cache Specialist",
+              "id": "performance-cache-specialist",
+              "level": "C",
+              "parent": "performance-data-and-network-performance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Network Latency Specialist",
+              "id": "performance-network-latency-specialist",
+              "level": "C",
+              "parent": "performance-data-and-network-performance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Serialization Specialist",
+              "id": "performance-serialization-specialist",
+              "level": "C",
+              "parent": "performance-data-and-network-performance-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Capacity and Scalability Lead",
+          "id": "performance-capacity-and-scalability-lead",
+          "level": "B",
+          "parent": "performance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Capacity Planner",
+              "id": "performance-capacity-planner",
+              "level": "C",
+              "parent": "performance-capacity-and-scalability-lead",
+              "read_only": true
+            },
+            {
+              "role": "Horizontal Scaling Specialist",
+              "id": "performance-horizontal-scaling-specialist",
+              "level": "C",
+              "parent": "performance-capacity-and-scalability-lead",
+              "read_only": false
+            },
+            {
+              "role": "Bottleneck Analyst",
+              "id": "performance-bottleneck-analyst",
+              "level": "C",
+              "parent": "performance-capacity-and-scalability-lead",
+              "read_only": true
+            },
+            {
+              "role": "Cost-Performance Analyst",
+              "id": "performance-cost-performance-analyst",
+              "level": "C",
+              "parent": "performance-capacity-and-scalability-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 18,
+      "slug": "platform-devops",
+      "folder": "18-platform-cloud-devops",
+      "title": "Platform, Cloud and DevOps",
+      "optional": false,
+      "artifact": "a platform delivery pack covering infrastructure, identity, networking, build and test pipelines, artifacts, runtime configuration, recovery, consistency, and security",
+      "manager": {
+        "role": "Platform and DevOps Manager",
+        "id": "platform-devops-platform-and-devops-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Infrastructure Lead",
+          "id": "platform-devops-infrastructure-lead",
+          "level": "B",
+          "parent": "platform-devops-platform-and-devops-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Cloud Resource Developer",
+              "id": "platform-devops-cloud-resource-developer",
+              "level": "C",
+              "parent": "platform-devops-infrastructure-lead",
+              "read_only": false
+            },
+            {
+              "role": "Infrastructure-as-Code Developer",
+              "id": "platform-devops-infrastructure-as-code-developer",
+              "level": "C",
+              "parent": "platform-devops-infrastructure-lead",
+              "read_only": false
+            },
+            {
+              "role": "Network Infrastructure Specialist",
+              "id": "platform-devops-network-infrastructure-specialist",
+              "level": "C",
+              "parent": "platform-devops-infrastructure-lead",
+              "read_only": false
+            },
+            {
+              "role": "Identity and Access Specialist",
+              "id": "platform-devops-identity-and-access-specialist",
+              "level": "C",
+              "parent": "platform-devops-infrastructure-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Build and CI Lead",
+          "id": "platform-devops-build-and-ci-lead",
+          "level": "B",
+          "parent": "platform-devops-platform-and-devops-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Build Pipeline Developer",
+              "id": "platform-devops-build-pipeline-developer",
+              "level": "C",
+              "parent": "platform-devops-build-and-ci-lead",
+              "read_only": false
+            },
+            {
+              "role": "Test Pipeline Developer",
+              "id": "platform-devops-test-pipeline-developer",
+              "level": "C",
+              "parent": "platform-devops-build-and-ci-lead",
+              "read_only": false
+            },
+            {
+              "role": "Artifact Management Specialist",
+              "id": "platform-devops-artifact-management-specialist",
+              "level": "C",
+              "parent": "platform-devops-build-and-ci-lead",
+              "read_only": false
+            },
+            {
+              "role": "Dependency Cache Specialist",
+              "id": "platform-devops-dependency-cache-specialist",
+              "level": "C",
+              "parent": "platform-devops-build-and-ci-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Runtime Platform Lead",
+          "id": "platform-devops-runtime-platform-lead",
+          "level": "B",
+          "parent": "platform-devops-platform-and-devops-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Container Specialist",
+              "id": "platform-devops-container-specialist",
+              "level": "C",
+              "parent": "platform-devops-runtime-platform-lead",
+              "read_only": false
+            },
+            {
+              "role": "Kubernetes or Orchestration Specialist",
+              "id": "platform-devops-kubernetes-or-orchestration-specialist",
+              "level": "C",
+              "parent": "platform-devops-runtime-platform-lead",
+              "read_only": false
+            },
+            {
+              "role": "Serverless Specialist",
+              "id": "platform-devops-serverless-specialist",
+              "level": "C",
+              "parent": "platform-devops-runtime-platform-lead",
+              "read_only": false
+            },
+            {
+              "role": "Configuration Management Specialist",
+              "id": "platform-devops-configuration-management-specialist",
+              "level": "C",
+              "parent": "platform-devops-runtime-platform-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Platform Reliability Lead",
+          "id": "platform-devops-platform-reliability-lead",
+          "level": "B",
+          "parent": "platform-devops-platform-and-devops-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Backup Specialist",
+              "id": "platform-devops-backup-specialist",
+              "level": "C",
+              "parent": "platform-devops-platform-reliability-lead",
+              "read_only": false
+            },
+            {
+              "role": "Disaster Recovery Specialist",
+              "id": "platform-devops-disaster-recovery-specialist",
+              "level": "C",
+              "parent": "platform-devops-platform-reliability-lead",
+              "read_only": false
+            },
+            {
+              "role": "Environment Consistency Reviewer",
+              "id": "platform-devops-environment-consistency-reviewer",
+              "level": "C",
+              "parent": "platform-devops-platform-reliability-lead",
+              "read_only": true
+            },
+            {
+              "role": "Platform Security Reviewer",
+              "id": "platform-devops-platform-security-reviewer",
+              "level": "C",
+              "parent": "platform-devops-platform-reliability-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 19,
+      "slug": "release",
+      "folder": "19-release-deployment",
+      "title": "Release and Deployment",
+      "optional": false,
+      "artifact": "a release pack covering versioning, artifacts, notes, migrations, configuration, rollout, validation, rollback, evidence, and go or no-go criteria",
+      "manager": {
+        "role": "Release Manager",
+        "id": "release-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Release Preparation Lead",
+          "id": "release-preparation-lead",
+          "level": "B",
+          "parent": "release-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Versioning Specialist",
+              "id": "release-versioning-specialist",
+              "level": "C",
+              "parent": "release-preparation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Changelog Developer",
+              "id": "release-changelog-developer",
+              "level": "C",
+              "parent": "release-preparation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Dependency and Artifact Verifier",
+              "id": "release-dependency-and-artifact-verifier",
+              "level": "C",
+              "parent": "release-preparation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Release Notes Writer",
+              "id": "release-notes-writer",
+              "level": "C",
+              "parent": "release-preparation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Deployment Lead",
+          "id": "release-deployment-lead",
+          "level": "B",
+          "parent": "release-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Deployment Pipeline Developer",
+              "id": "release-deployment-pipeline-developer",
+              "level": "C",
+              "parent": "release-deployment-lead",
+              "read_only": false
+            },
+            {
+              "role": "Database Migration Coordinator",
+              "id": "release-database-migration-coordinator",
+              "level": "C",
+              "parent": "release-deployment-lead",
+              "read_only": true
+            },
+            {
+              "role": "Configuration Coordinator",
+              "id": "release-configuration-coordinator",
+              "level": "C",
+              "parent": "release-deployment-lead",
+              "read_only": true
+            },
+            {
+              "role": "Environment Validation Specialist",
+              "id": "release-environment-validation-specialist",
+              "level": "C",
+              "parent": "release-deployment-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Rollout Lead",
+          "id": "release-rollout-lead",
+          "level": "B",
+          "parent": "release-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Feature Flag Specialist",
+              "id": "release-feature-flag-specialist",
+              "level": "C",
+              "parent": "release-rollout-lead",
+              "read_only": false
+            },
+            {
+              "role": "Canary Release Specialist",
+              "id": "release-canary-release-specialist",
+              "level": "C",
+              "parent": "release-rollout-lead",
+              "read_only": false
+            },
+            {
+              "role": "Blue-Green Deployment Specialist",
+              "id": "release-blue-green-deployment-specialist",
+              "level": "C",
+              "parent": "release-rollout-lead",
+              "read_only": false
+            },
+            {
+              "role": "User Migration Specialist",
+              "id": "release-user-migration-specialist",
+              "level": "C",
+              "parent": "release-rollout-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Release Validation Lead",
+          "id": "release-validation-lead",
+          "level": "B",
+          "parent": "release-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Smoke Test Developer",
+              "id": "release-smoke-test-developer",
+              "level": "C",
+              "parent": "release-validation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Post-Deployment Validator",
+              "id": "release-post-deployment-validator",
+              "level": "C",
+              "parent": "release-validation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Rollback Tester",
+              "id": "release-rollback-tester",
+              "level": "C",
+              "parent": "release-validation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Release Readiness Reviewer",
+              "id": "release-readiness-reviewer",
+              "level": "C",
+              "parent": "release-validation-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 20,
+      "slug": "observability-sre",
+      "folder": "20-observability-sre",
+      "title": "Observability and SRE",
+      "optional": false,
+      "artifact": "an operational-readiness pack covering telemetry, service objectives, resilience, capacity, alerts, dashboards, runbooks, recovery tests, and operational risks",
+      "manager": {
+        "role": "Observability and SRE Manager",
+        "id": "observability-sre-observability-and-sre-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Telemetry Lead",
+          "id": "observability-sre-telemetry-lead",
+          "level": "B",
+          "parent": "observability-sre-observability-and-sre-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Logging Specialist",
+              "id": "observability-sre-logging-specialist",
+              "level": "C",
+              "parent": "observability-sre-telemetry-lead",
+              "read_only": false
+            },
+            {
+              "role": "Metrics Specialist",
+              "id": "observability-sre-metrics-specialist",
+              "level": "C",
+              "parent": "observability-sre-telemetry-lead",
+              "read_only": false
+            },
+            {
+              "role": "Distributed Tracing Specialist",
+              "id": "observability-sre-distributed-tracing-specialist",
+              "level": "C",
+              "parent": "observability-sre-telemetry-lead",
+              "read_only": false
+            },
+            {
+              "role": "Audit Trail Specialist",
+              "id": "observability-sre-audit-trail-specialist",
+              "level": "C",
+              "parent": "observability-sre-telemetry-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Service Reliability Lead",
+          "id": "observability-sre-service-reliability-lead",
+          "level": "B",
+          "parent": "observability-sre-observability-and-sre-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Service-Level Objective Designer",
+              "id": "observability-sre-service-level-objective-designer",
+              "level": "C",
+              "parent": "observability-sre-service-reliability-lead",
+              "read_only": false
+            },
+            {
+              "role": "Availability Specialist",
+              "id": "observability-sre-availability-specialist",
+              "level": "C",
+              "parent": "observability-sre-service-reliability-lead",
+              "read_only": false
+            },
+            {
+              "role": "Resilience Engineer",
+              "id": "observability-sre-resilience-engineer",
+              "level": "C",
+              "parent": "observability-sre-service-reliability-lead",
+              "read_only": false
+            },
+            {
+              "role": "Capacity Specialist",
+              "id": "observability-sre-capacity-specialist",
+              "level": "C",
+              "parent": "observability-sre-service-reliability-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Alerting Lead",
+          "id": "observability-sre-alerting-lead",
+          "level": "B",
+          "parent": "observability-sre-observability-and-sre-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Alert Rule Designer",
+              "id": "observability-sre-alert-rule-designer",
+              "level": "C",
+              "parent": "observability-sre-alerting-lead",
+              "read_only": false
+            },
+            {
+              "role": "Noise Reduction Specialist",
+              "id": "observability-sre-noise-reduction-specialist",
+              "level": "C",
+              "parent": "observability-sre-alerting-lead",
+              "read_only": false
+            },
+            {
+              "role": "Escalation Policy Designer",
+              "id": "observability-sre-escalation-policy-designer",
+              "level": "C",
+              "parent": "observability-sre-alerting-lead",
+              "read_only": false
+            },
+            {
+              "role": "Dashboard Developer",
+              "id": "observability-sre-dashboard-developer",
+              "level": "C",
+              "parent": "observability-sre-alerting-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Operational Readiness Lead",
+          "id": "observability-sre-operational-readiness-lead",
+          "level": "B",
+          "parent": "observability-sre-observability-and-sre-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Runbook Writer",
+              "id": "observability-sre-runbook-writer",
+              "level": "C",
+              "parent": "observability-sre-operational-readiness-lead",
+              "read_only": false
+            },
+            {
+              "role": "Failure Scenario Tester",
+              "id": "observability-sre-failure-scenario-tester",
+              "level": "C",
+              "parent": "observability-sre-operational-readiness-lead",
+              "read_only": true
+            },
+            {
+              "role": "Recovery Procedure Tester",
+              "id": "observability-sre-recovery-procedure-tester",
+              "level": "C",
+              "parent": "observability-sre-operational-readiness-lead",
+              "read_only": true
+            },
+            {
+              "role": "Operational Risk Reviewer",
+              "id": "observability-sre-operational-risk-reviewer",
+              "level": "C",
+              "parent": "observability-sre-operational-readiness-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 21,
+      "slug": "incident-response",
+      "folder": "21-incident-response",
+      "title": "Incident Response",
+      "optional": false,
+      "artifact": "an incident pack covering impact, timeline, evidence, mitigation, recovery, root cause, corrective actions, monitoring improvements, and regression prevention",
+      "manager": {
+        "role": "Incident Manager",
+        "id": "incident-response-incident-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Triage Lead",
+          "id": "incident-response-triage-lead",
+          "level": "B",
+          "parent": "incident-response-incident-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Impact Analyst",
+              "id": "incident-response-impact-analyst",
+              "level": "C",
+              "parent": "incident-response-triage-lead",
+              "read_only": true
+            },
+            {
+              "role": "Timeline Analyst",
+              "id": "incident-response-timeline-analyst",
+              "level": "C",
+              "parent": "incident-response-triage-lead",
+              "read_only": true
+            },
+            {
+              "role": "Log and Trace Investigator",
+              "id": "incident-response-log-and-trace-investigator",
+              "level": "C",
+              "parent": "incident-response-triage-lead",
+              "read_only": true
+            },
+            {
+              "role": "Reproduction Specialist",
+              "id": "incident-response-reproduction-specialist",
+              "level": "C",
+              "parent": "incident-response-triage-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Mitigation Lead",
+          "id": "incident-response-mitigation-lead",
+          "level": "B",
+          "parent": "incident-response-incident-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Rollback Specialist",
+              "id": "incident-response-rollback-specialist",
+              "level": "C",
+              "parent": "incident-response-mitigation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Configuration Mitigation Specialist",
+              "id": "incident-response-configuration-mitigation-specialist",
+              "level": "C",
+              "parent": "incident-response-mitigation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Traffic Management Specialist",
+              "id": "incident-response-traffic-management-specialist",
+              "level": "C",
+              "parent": "incident-response-mitigation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Recovery Specialist",
+              "id": "incident-response-data-recovery-specialist",
+              "level": "C",
+              "parent": "incident-response-mitigation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Root Cause Lead",
+          "id": "incident-response-root-cause-lead",
+          "level": "B",
+          "parent": "incident-response-incident-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Code Investigator",
+              "id": "incident-response-code-investigator",
+              "level": "C",
+              "parent": "incident-response-root-cause-lead",
+              "read_only": true
+            },
+            {
+              "role": "Infrastructure Investigator",
+              "id": "incident-response-infrastructure-investigator",
+              "level": "C",
+              "parent": "incident-response-root-cause-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dependency Investigator",
+              "id": "incident-response-dependency-investigator",
+              "level": "C",
+              "parent": "incident-response-root-cause-lead",
+              "read_only": true
+            },
+            {
+              "role": "Process Failure Investigator",
+              "id": "incident-response-process-failure-investigator",
+              "level": "C",
+              "parent": "incident-response-root-cause-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Post-Incident Lead",
+          "id": "incident-response-post-incident-lead",
+          "level": "B",
+          "parent": "incident-response-incident-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Postmortem Writer",
+              "id": "incident-response-postmortem-writer",
+              "level": "C",
+              "parent": "incident-response-post-incident-lead",
+              "read_only": false
+            },
+            {
+              "role": "Corrective Action Planner",
+              "id": "incident-response-corrective-action-planner",
+              "level": "C",
+              "parent": "incident-response-post-incident-lead",
+              "read_only": true
+            },
+            {
+              "role": "Monitoring Improvement Specialist",
+              "id": "incident-response-monitoring-improvement-specialist",
+              "level": "C",
+              "parent": "incident-response-post-incident-lead",
+              "read_only": false
+            },
+            {
+              "role": "Regression Prevention Reviewer",
+              "id": "incident-response-regression-prevention-reviewer",
+              "level": "C",
+              "parent": "incident-response-post-incident-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 22,
+      "slug": "maintenance",
+      "folder": "22-maintenance-refactoring",
+      "title": "Maintenance and Refactoring",
+      "optional": false,
+      "artifact": "a maintenance pack covering debt evidence, refactoring boundaries, behavior preservation, compatibility, deprecation, regression tests, performance comparison, and maintainability",
+      "manager": {
+        "role": "Maintenance Manager",
+        "id": "maintenance-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Technical Debt Assessment Lead",
+          "id": "maintenance-technical-debt-assessment-lead",
+          "level": "B",
+          "parent": "maintenance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Code Smell Analyst",
+              "id": "maintenance-code-smell-analyst",
+              "level": "C",
+              "parent": "maintenance-technical-debt-assessment-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dependency Health Analyst",
+              "id": "maintenance-dependency-health-analyst",
+              "level": "C",
+              "parent": "maintenance-technical-debt-assessment-lead",
+              "read_only": true
+            },
+            {
+              "role": "Complexity Analyst",
+              "id": "maintenance-complexity-analyst",
+              "level": "C",
+              "parent": "maintenance-technical-debt-assessment-lead",
+              "read_only": true
+            },
+            {
+              "role": "Duplication Analyst",
+              "id": "maintenance-duplication-analyst",
+              "level": "C",
+              "parent": "maintenance-technical-debt-assessment-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Refactoring Lead",
+          "id": "maintenance-refactoring-lead",
+          "level": "B",
+          "parent": "maintenance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Module Boundary Specialist",
+              "id": "maintenance-module-boundary-specialist",
+              "level": "C",
+              "parent": "maintenance-refactoring-lead",
+              "read_only": false
+            },
+            {
+              "role": "API Refactoring Specialist",
+              "id": "maintenance-api-refactoring-specialist",
+              "level": "C",
+              "parent": "maintenance-refactoring-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Model Refactoring Specialist",
+              "id": "maintenance-data-model-refactoring-specialist",
+              "level": "C",
+              "parent": "maintenance-refactoring-lead",
+              "read_only": false
+            },
+            {
+              "role": "Legacy Code Specialist",
+              "id": "maintenance-legacy-code-specialist",
+              "level": "C",
+              "parent": "maintenance-refactoring-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Compatibility Lead",
+          "id": "maintenance-compatibility-lead",
+          "level": "B",
+          "parent": "maintenance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Behaviour Preservation Analyst",
+              "id": "maintenance-behaviour-preservation-analyst",
+              "level": "C",
+              "parent": "maintenance-compatibility-lead",
+              "read_only": true
+            },
+            {
+              "role": "Backward Compatibility Specialist",
+              "id": "maintenance-backward-compatibility-specialist",
+              "level": "C",
+              "parent": "maintenance-compatibility-lead",
+              "read_only": false
+            },
+            {
+              "role": "Migration Compatibility Specialist",
+              "id": "maintenance-migration-compatibility-specialist",
+              "level": "C",
+              "parent": "maintenance-compatibility-lead",
+              "read_only": false
+            },
+            {
+              "role": "Deprecation Specialist",
+              "id": "maintenance-deprecation-specialist",
+              "level": "C",
+              "parent": "maintenance-compatibility-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Refactoring Validation Lead",
+          "id": "maintenance-refactoring-validation-lead",
+          "level": "B",
+          "parent": "maintenance-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Regression Test Developer",
+              "id": "maintenance-regression-test-developer",
+              "level": "C",
+              "parent": "maintenance-refactoring-validation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Performance Comparison Specialist",
+              "id": "maintenance-performance-comparison-specialist",
+              "level": "C",
+              "parent": "maintenance-refactoring-validation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Public Contract Reviewer",
+              "id": "maintenance-public-contract-reviewer",
+              "level": "C",
+              "parent": "maintenance-refactoring-validation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Maintainability Reviewer",
+              "id": "maintenance-maintainability-reviewer",
+              "level": "C",
+              "parent": "maintenance-refactoring-validation-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 23,
+      "slug": "migration",
+      "folder": "23-migration-modernisation",
+      "title": "Migration and Modernisation",
+      "optional": false,
+      "artifact": "a migration pack covering current and target states, contracts, transition architecture, code and data movement, parallel run, reconciliation, cutover, and rollback",
+      "manager": {
+        "role": "Migration Manager",
+        "id": "migration-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Current-State Assessment Lead",
+          "id": "migration-current-state-assessment-lead",
+          "level": "B",
+          "parent": "migration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Legacy System Explorer",
+              "id": "migration-legacy-system-explorer",
+              "level": "C",
+              "parent": "migration-current-state-assessment-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dependency Mapper",
+              "id": "migration-dependency-mapper",
+              "level": "C",
+              "parent": "migration-current-state-assessment-lead",
+              "read_only": true
+            },
+            {
+              "role": "Data Inventory Specialist",
+              "id": "migration-data-inventory-specialist",
+              "level": "C",
+              "parent": "migration-current-state-assessment-lead",
+              "read_only": false
+            },
+            {
+              "role": "Behavioural Contract Analyst",
+              "id": "migration-behavioural-contract-analyst",
+              "level": "C",
+              "parent": "migration-current-state-assessment-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Target-State Design Lead",
+          "id": "migration-target-state-design-lead",
+          "level": "B",
+          "parent": "migration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Target Architecture Designer",
+              "id": "migration-target-architecture-designer",
+              "level": "C",
+              "parent": "migration-target-state-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Technology Selection Specialist",
+              "id": "migration-technology-selection-specialist",
+              "level": "C",
+              "parent": "migration-target-state-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Compatibility Designer",
+              "id": "migration-compatibility-designer",
+              "level": "C",
+              "parent": "migration-target-state-design-lead",
+              "read_only": false
+            },
+            {
+              "role": "Transition Architecture Specialist",
+              "id": "migration-transition-architecture-specialist",
+              "level": "C",
+              "parent": "migration-target-state-design-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Migration Execution Lead",
+          "id": "migration-execution-lead",
+          "level": "B",
+          "parent": "migration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Code Migration Developer",
+              "id": "migration-code-migration-developer",
+              "level": "C",
+              "parent": "migration-execution-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Migration Developer",
+              "id": "migration-data-migration-developer",
+              "level": "C",
+              "parent": "migration-execution-lead",
+              "read_only": false
+            },
+            {
+              "role": "Interface Migration Developer",
+              "id": "migration-interface-migration-developer",
+              "level": "C",
+              "parent": "migration-execution-lead",
+              "read_only": false
+            },
+            {
+              "role": "Parallel-Run Specialist",
+              "id": "migration-parallel-run-specialist",
+              "level": "C",
+              "parent": "migration-execution-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Migration Validation Lead",
+          "id": "migration-validation-lead",
+          "level": "B",
+          "parent": "migration-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Data Reconciliation Specialist",
+              "id": "migration-data-reconciliation-specialist",
+              "level": "C",
+              "parent": "migration-validation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Behaviour Comparison Specialist",
+              "id": "migration-behaviour-comparison-specialist",
+              "level": "C",
+              "parent": "migration-validation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Cutover Tester",
+              "id": "migration-cutover-tester",
+              "level": "C",
+              "parent": "migration-validation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Rollback Reviewer",
+              "id": "migration-rollback-reviewer",
+              "level": "C",
+              "parent": "migration-validation-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 24,
+      "slug": "documentation-dx",
+      "folder": "24-documentation-developer-experience",
+      "title": "Documentation and Developer Experience",
+      "optional": false,
+      "artifact": "a documentation and developer-experience pack covering user and developer guidance, setup, APIs, architecture, contribution, tooling, diagnostics, accuracy, usability, and staleness",
+      "manager": {
+        "role": "Documentation and DX Manager",
+        "id": "documentation-dx-documentation-and-dx-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "User Documentation Lead",
+          "id": "documentation-dx-user-documentation-lead",
+          "level": "B",
+          "parent": "documentation-dx-documentation-and-dx-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Tutorial Writer",
+              "id": "documentation-dx-tutorial-writer",
+              "level": "C",
+              "parent": "documentation-dx-user-documentation-lead",
+              "read_only": false
+            },
+            {
+              "role": "How-To Guide Writer",
+              "id": "documentation-dx-how-to-guide-writer",
+              "level": "C",
+              "parent": "documentation-dx-user-documentation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Reference Documentation Writer",
+              "id": "documentation-dx-reference-documentation-writer",
+              "level": "C",
+              "parent": "documentation-dx-user-documentation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Troubleshooting Writer",
+              "id": "documentation-dx-troubleshooting-writer",
+              "level": "C",
+              "parent": "documentation-dx-user-documentation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Developer Documentation Lead",
+          "id": "documentation-dx-developer-documentation-lead",
+          "level": "B",
+          "parent": "documentation-dx-documentation-and-dx-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "API Documentation Writer",
+              "id": "documentation-dx-api-documentation-writer",
+              "level": "C",
+              "parent": "documentation-dx-developer-documentation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Architecture Documentation Writer",
+              "id": "documentation-dx-architecture-documentation-writer",
+              "level": "C",
+              "parent": "documentation-dx-developer-documentation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Setup Guide Writer",
+              "id": "documentation-dx-setup-guide-writer",
+              "level": "C",
+              "parent": "documentation-dx-developer-documentation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Contribution Guide Writer",
+              "id": "documentation-dx-contribution-guide-writer",
+              "level": "C",
+              "parent": "documentation-dx-developer-documentation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Developer Experience Lead",
+          "id": "documentation-dx-developer-experience-lead",
+          "level": "B",
+          "parent": "documentation-dx-documentation-and-dx-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Local Environment Specialist",
+              "id": "documentation-dx-local-environment-specialist",
+              "level": "C",
+              "parent": "documentation-dx-developer-experience-lead",
+              "read_only": false
+            },
+            {
+              "role": "CLI and Tooling Developer",
+              "id": "documentation-dx-cli-and-tooling-developer",
+              "level": "C",
+              "parent": "documentation-dx-developer-experience-lead",
+              "read_only": false
+            },
+            {
+              "role": "Project Template Developer",
+              "id": "documentation-dx-project-template-developer",
+              "level": "C",
+              "parent": "documentation-dx-developer-experience-lead",
+              "read_only": false
+            },
+            {
+              "role": "Error Message and Diagnostics Specialist",
+              "id": "documentation-dx-error-message-and-diagnostics-specialist",
+              "level": "C",
+              "parent": "documentation-dx-developer-experience-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Documentation Review Lead",
+          "id": "documentation-dx-documentation-review-lead",
+          "level": "B",
+          "parent": "documentation-dx-documentation-and-dx-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Technical Accuracy Reviewer",
+              "id": "documentation-dx-technical-accuracy-reviewer",
+              "level": "C",
+              "parent": "documentation-dx-documentation-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Completeness Reviewer",
+              "id": "documentation-dx-completeness-reviewer",
+              "level": "C",
+              "parent": "documentation-dx-documentation-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Usability Reviewer",
+              "id": "documentation-dx-usability-reviewer",
+              "level": "C",
+              "parent": "documentation-dx-documentation-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Staleness Reviewer",
+              "id": "documentation-dx-staleness-reviewer",
+              "level": "C",
+              "parent": "documentation-dx-documentation-review-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 25,
+      "slug": "compliance-privacy",
+      "folder": "25-compliance-privacy-governance",
+      "title": "Compliance, Privacy and Governance",
+      "optional": false,
+      "artifact": "a compliance and privacy pack covering applicable obligations, data inventory and minimization, retention, consent, governance, auditability, controls, evidence, and remediation",
+      "manager": {
+        "role": "Compliance and Privacy Manager",
+        "id": "compliance-privacy-compliance-and-privacy-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Regulatory Analysis Lead",
+          "id": "compliance-privacy-regulatory-analysis-lead",
+          "level": "B",
+          "parent": "compliance-privacy-compliance-and-privacy-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Applicable Law Researcher",
+              "id": "compliance-privacy-applicable-law-researcher",
+              "level": "C",
+              "parent": "compliance-privacy-regulatory-analysis-lead",
+              "read_only": true
+            },
+            {
+              "role": "Industry Standards Researcher",
+              "id": "compliance-privacy-industry-standards-researcher",
+              "level": "C",
+              "parent": "compliance-privacy-regulatory-analysis-lead",
+              "read_only": true
+            },
+            {
+              "role": "Contractual Requirements Analyst",
+              "id": "compliance-privacy-contractual-requirements-analyst",
+              "level": "C",
+              "parent": "compliance-privacy-regulatory-analysis-lead",
+              "read_only": true
+            },
+            {
+              "role": "Evidence Requirements Analyst",
+              "id": "compliance-privacy-evidence-requirements-analyst",
+              "level": "C",
+              "parent": "compliance-privacy-regulatory-analysis-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Privacy Engineering Lead",
+          "id": "compliance-privacy-privacy-engineering-lead",
+          "level": "B",
+          "parent": "compliance-privacy-compliance-and-privacy-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Data Inventory Specialist",
+              "id": "compliance-privacy-data-inventory-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-privacy-engineering-lead",
+              "read_only": false
+            },
+            {
+              "role": "Data Minimisation Specialist",
+              "id": "compliance-privacy-data-minimisation-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-privacy-engineering-lead",
+              "read_only": false
+            },
+            {
+              "role": "Retention Policy Specialist",
+              "id": "compliance-privacy-retention-policy-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-privacy-engineering-lead",
+              "read_only": false
+            },
+            {
+              "role": "Consent and User Rights Specialist",
+              "id": "compliance-privacy-consent-and-user-rights-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-privacy-engineering-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Governance Lead",
+          "id": "compliance-privacy-governance-lead",
+          "level": "B",
+          "parent": "compliance-privacy-compliance-and-privacy-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Access Governance Specialist",
+              "id": "compliance-privacy-access-governance-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-governance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Auditability Specialist",
+              "id": "compliance-privacy-auditability-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-governance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Change Control Specialist",
+              "id": "compliance-privacy-change-control-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-governance-lead",
+              "read_only": false
+            },
+            {
+              "role": "Model Governance Specialist",
+              "id": "compliance-privacy-model-governance-specialist",
+              "level": "C",
+              "parent": "compliance-privacy-governance-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Compliance Validation Lead",
+          "id": "compliance-privacy-compliance-validation-lead",
+          "level": "B",
+          "parent": "compliance-privacy-compliance-and-privacy-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Control Tester",
+              "id": "compliance-privacy-control-tester",
+              "level": "C",
+              "parent": "compliance-privacy-compliance-validation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Evidence Reviewer",
+              "id": "compliance-privacy-evidence-reviewer",
+              "level": "C",
+              "parent": "compliance-privacy-compliance-validation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Policy-to-Implementation Reviewer",
+              "id": "compliance-privacy-policy-to-implementation-reviewer",
+              "level": "C",
+              "parent": "compliance-privacy-compliance-validation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Remediation Planner",
+              "id": "compliance-privacy-remediation-planner",
+              "level": "C",
+              "parent": "compliance-privacy-compliance-validation-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 26,
+      "slug": "code-review",
+      "folder": "26-code-review-pull-requests",
+      "title": "Code Review and Pull Requests",
+      "optional": false,
+      "artifact": "a deduplicated review report prioritized by blocking, high-priority, recommended, optional, and validation-required findings, each with concrete evidence and impact",
+      "manager": {
+        "role": "Code Review Manager",
+        "id": "code-review-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Correctness Review Lead",
+          "id": "code-review-correctness-review-lead",
+          "level": "B",
+          "parent": "code-review-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Logic Reviewer",
+              "id": "code-review-logic-reviewer",
+              "level": "C",
+              "parent": "code-review-correctness-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Edge Case Reviewer",
+              "id": "code-review-edge-case-reviewer",
+              "level": "C",
+              "parent": "code-review-correctness-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Error Handling Reviewer",
+              "id": "code-review-error-handling-reviewer",
+              "level": "C",
+              "parent": "code-review-correctness-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Concurrency Reviewer",
+              "id": "code-review-concurrency-reviewer",
+              "level": "C",
+              "parent": "code-review-correctness-review-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Architecture Review Lead",
+          "id": "code-review-architecture-review-lead",
+          "level": "B",
+          "parent": "code-review-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Boundary and Coupling Reviewer",
+              "id": "code-review-boundary-and-coupling-reviewer",
+              "level": "C",
+              "parent": "code-review-architecture-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Pattern Consistency Reviewer",
+              "id": "code-review-pattern-consistency-reviewer",
+              "level": "C",
+              "parent": "code-review-architecture-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "API Contract Reviewer",
+              "id": "code-review-api-contract-reviewer",
+              "level": "C",
+              "parent": "code-review-architecture-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Data Flow Reviewer",
+              "id": "code-review-data-flow-reviewer",
+              "level": "C",
+              "parent": "code-review-architecture-review-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Quality Review Lead",
+          "id": "code-review-quality-review-lead",
+          "level": "B",
+          "parent": "code-review-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Test Coverage Reviewer",
+              "id": "code-review-test-coverage-reviewer",
+              "level": "C",
+              "parent": "code-review-quality-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Maintainability Reviewer",
+              "id": "code-review-maintainability-reviewer",
+              "level": "C",
+              "parent": "code-review-quality-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Performance Reviewer",
+              "id": "code-review-performance-reviewer",
+              "level": "C",
+              "parent": "code-review-quality-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Documentation Reviewer",
+              "id": "code-review-documentation-reviewer",
+              "level": "C",
+              "parent": "code-review-quality-review-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Risk Review Lead",
+          "id": "code-review-risk-review-lead",
+          "level": "B",
+          "parent": "code-review-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Security Reviewer",
+              "id": "code-review-security-reviewer",
+              "level": "C",
+              "parent": "code-review-risk-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Compatibility Reviewer",
+              "id": "code-review-compatibility-reviewer",
+              "level": "C",
+              "parent": "code-review-risk-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Deployment Risk Reviewer",
+              "id": "code-review-deployment-risk-reviewer",
+              "level": "C",
+              "parent": "code-review-risk-review-lead",
+              "read_only": true
+            },
+            {
+              "role": "Migration Risk Reviewer",
+              "id": "code-review-migration-risk-reviewer",
+              "level": "C",
+              "parent": "code-review-risk-review-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 27,
+      "slug": "bug-resolution",
+      "folder": "27-bug-investigation-resolution",
+      "title": "Bug Investigation and Resolution",
+      "optional": false,
+      "artifact": "a bug-resolution pack covering severity, reproduction, impact, regression range, root cause, fix choice, repair needs, verification, side effects, and release risk",
+      "manager": {
+        "role": "Bug Resolution Manager",
+        "id": "bug-resolution-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Triage Lead",
+          "id": "bug-resolution-triage-lead",
+          "level": "B",
+          "parent": "bug-resolution-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Severity Analyst",
+              "id": "bug-resolution-severity-analyst",
+              "level": "C",
+              "parent": "bug-resolution-triage-lead",
+              "read_only": true
+            },
+            {
+              "role": "Reproduction Specialist",
+              "id": "bug-resolution-reproduction-specialist",
+              "level": "C",
+              "parent": "bug-resolution-triage-lead",
+              "read_only": false
+            },
+            {
+              "role": "Regression Range Analyst",
+              "id": "bug-resolution-regression-range-analyst",
+              "level": "C",
+              "parent": "bug-resolution-triage-lead",
+              "read_only": true
+            },
+            {
+              "role": "User Impact Analyst",
+              "id": "bug-resolution-user-impact-analyst",
+              "level": "C",
+              "parent": "bug-resolution-triage-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Investigation Lead",
+          "id": "bug-resolution-investigation-lead",
+          "level": "B",
+          "parent": "bug-resolution-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Code Path Investigator",
+              "id": "bug-resolution-code-path-investigator",
+              "level": "C",
+              "parent": "bug-resolution-investigation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Data Investigator",
+              "id": "bug-resolution-data-investigator",
+              "level": "C",
+              "parent": "bug-resolution-investigation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Environment Investigator",
+              "id": "bug-resolution-environment-investigator",
+              "level": "C",
+              "parent": "bug-resolution-investigation-lead",
+              "read_only": true
+            },
+            {
+              "role": "Dependency Investigator",
+              "id": "bug-resolution-dependency-investigator",
+              "level": "C",
+              "parent": "bug-resolution-investigation-lead",
+              "read_only": true
+            }
+          ]
+        },
+        {
+          "role": "Fix Lead",
+          "id": "bug-resolution-fix-lead",
+          "level": "B",
+          "parent": "bug-resolution-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Minimal Fix Developer",
+              "id": "bug-resolution-minimal-fix-developer",
+              "level": "C",
+              "parent": "bug-resolution-fix-lead",
+              "read_only": false
+            },
+            {
+              "role": "Root-Cause Fix Developer",
+              "id": "bug-resolution-root-cause-fix-developer",
+              "level": "C",
+              "parent": "bug-resolution-fix-lead",
+              "read_only": false
+            },
+            {
+              "role": "Defensive Handling Developer",
+              "id": "bug-resolution-defensive-handling-developer",
+              "level": "C",
+              "parent": "bug-resolution-fix-lead",
+              "read_only": false
+            },
+            {
+              "role": "Migration or Repair Developer",
+              "id": "bug-resolution-migration-or-repair-developer",
+              "level": "C",
+              "parent": "bug-resolution-fix-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Verification Lead",
+          "id": "bug-resolution-verification-lead",
+          "level": "B",
+          "parent": "bug-resolution-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Reproduction Test Developer",
+              "id": "bug-resolution-reproduction-test-developer",
+              "level": "C",
+              "parent": "bug-resolution-verification-lead",
+              "read_only": false
+            },
+            {
+              "role": "Regression Test Developer",
+              "id": "bug-resolution-regression-test-developer",
+              "level": "C",
+              "parent": "bug-resolution-verification-lead",
+              "read_only": false
+            },
+            {
+              "role": "Side-Effect Reviewer",
+              "id": "bug-resolution-side-effect-reviewer",
+              "level": "C",
+              "parent": "bug-resolution-verification-lead",
+              "read_only": true
+            },
+            {
+              "role": "Release Risk Reviewer",
+              "id": "bug-resolution-release-risk-reviewer",
+              "level": "C",
+              "parent": "bug-resolution-verification-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 28,
+      "slug": "embedded-systems",
+      "folder": "28-embedded-systems-iot",
+      "title": "Embedded Systems and IoT",
+      "optional": true,
+      "artifact": "an embedded delivery pack covering hardware interfaces, firmware, real-time and resource constraints, connectivity, reliability, hardware-in-the-loop tests, and security",
+      "manager": {
+        "role": "Embedded Systems Manager",
+        "id": "embedded-systems-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Hardware Integration Lead",
+          "id": "embedded-systems-hardware-integration-lead",
+          "level": "B",
+          "parent": "embedded-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Sensor Specialist",
+              "id": "embedded-systems-sensor-specialist",
+              "level": "C",
+              "parent": "embedded-systems-hardware-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Driver Developer",
+              "id": "embedded-systems-driver-developer",
+              "level": "C",
+              "parent": "embedded-systems-hardware-integration-lead",
+              "read_only": false
+            },
+            {
+              "role": "Hardware Interface Specialist",
+              "id": "embedded-systems-hardware-interface-specialist",
+              "level": "C",
+              "parent": "embedded-systems-hardware-integration-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Firmware Lead",
+          "id": "embedded-systems-firmware-lead",
+          "level": "B",
+          "parent": "embedded-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Real-Time Systems Developer",
+              "id": "embedded-systems-real-time-systems-developer",
+              "level": "C",
+              "parent": "embedded-systems-firmware-lead",
+              "read_only": false
+            },
+            {
+              "role": "Memory-Constrained Developer",
+              "id": "embedded-systems-memory-constrained-developer",
+              "level": "C",
+              "parent": "embedded-systems-firmware-lead",
+              "read_only": false
+            },
+            {
+              "role": "Power Management Specialist",
+              "id": "embedded-systems-power-management-specialist",
+              "level": "C",
+              "parent": "embedded-systems-firmware-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Connectivity Lead",
+          "id": "embedded-systems-connectivity-lead",
+          "level": "B",
+          "parent": "embedded-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Bluetooth Specialist",
+              "id": "embedded-systems-bluetooth-specialist",
+              "level": "C",
+              "parent": "embedded-systems-connectivity-lead",
+              "read_only": false
+            },
+            {
+              "role": "Wi-Fi Specialist",
+              "id": "embedded-systems-wi-fi-specialist",
+              "level": "C",
+              "parent": "embedded-systems-connectivity-lead",
+              "read_only": false
+            },
+            {
+              "role": "Device Protocol Specialist",
+              "id": "embedded-systems-device-protocol-specialist",
+              "level": "C",
+              "parent": "embedded-systems-connectivity-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Device Quality Lead",
+          "id": "embedded-systems-device-quality-lead",
+          "level": "B",
+          "parent": "embedded-systems-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Hardware-in-the-Loop Tester",
+              "id": "embedded-systems-hardware-in-the-loop-tester",
+              "level": "C",
+              "parent": "embedded-systems-device-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Reliability Tester",
+              "id": "embedded-systems-reliability-tester",
+              "level": "C",
+              "parent": "embedded-systems-device-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Firmware Security Reviewer",
+              "id": "embedded-systems-firmware-security-reviewer",
+              "level": "C",
+              "parent": "embedded-systems-device-quality-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 29,
+      "slug": "game-development",
+      "folder": "29-game-development",
+      "title": "Game Development",
+      "optional": true,
+      "artifact": "a game delivery pack covering mechanics, behavior, progression, rendering, assets, content systems, gameplay quality, performance, and platform compatibility",
+      "manager": {
+        "role": "Game Development Manager",
+        "id": "game-development-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Gameplay Lead",
+          "id": "game-development-gameplay-lead",
+          "level": "B",
+          "parent": "game-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Mechanics Developer",
+              "id": "game-development-mechanics-developer",
+              "level": "C",
+              "parent": "game-development-gameplay-lead",
+              "read_only": false
+            },
+            {
+              "role": "AI Behaviour Developer",
+              "id": "game-development-ai-behaviour-developer",
+              "level": "C",
+              "parent": "game-development-gameplay-lead",
+              "read_only": false
+            },
+            {
+              "role": "Progression Systems Developer",
+              "id": "game-development-progression-systems-developer",
+              "level": "C",
+              "parent": "game-development-gameplay-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Rendering and Visuals Lead",
+          "id": "game-development-rendering-and-visuals-lead",
+          "level": "B",
+          "parent": "game-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Graphics Developer",
+              "id": "game-development-graphics-developer",
+              "level": "C",
+              "parent": "game-development-rendering-and-visuals-lead",
+              "read_only": false
+            },
+            {
+              "role": "Shader Developer",
+              "id": "game-development-shader-developer",
+              "level": "C",
+              "parent": "game-development-rendering-and-visuals-lead",
+              "read_only": false
+            },
+            {
+              "role": "Technical Artist",
+              "id": "game-development-technical-artist",
+              "level": "C",
+              "parent": "game-development-rendering-and-visuals-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Content Systems Lead",
+          "id": "game-development-content-systems-lead",
+          "level": "B",
+          "parent": "game-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Level Systems Developer",
+              "id": "game-development-level-systems-developer",
+              "level": "C",
+              "parent": "game-development-content-systems-lead",
+              "read_only": false
+            },
+            {
+              "role": "Asset Pipeline Developer",
+              "id": "game-development-asset-pipeline-developer",
+              "level": "C",
+              "parent": "game-development-content-systems-lead",
+              "read_only": false
+            },
+            {
+              "role": "Dialogue and Narrative Developer",
+              "id": "game-development-dialogue-and-narrative-developer",
+              "level": "C",
+              "parent": "game-development-content-systems-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Game Quality Lead",
+          "id": "game-development-game-quality-lead",
+          "level": "B",
+          "parent": "game-development-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Gameplay Tester",
+              "id": "game-development-gameplay-tester",
+              "level": "C",
+              "parent": "game-development-game-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Performance Tester",
+              "id": "game-development-performance-tester",
+              "level": "C",
+              "parent": "game-development-game-quality-lead",
+              "read_only": true
+            },
+            {
+              "role": "Platform Compatibility Tester",
+              "id": "game-development-platform-compatibility-tester",
+              "level": "C",
+              "parent": "game-development-game-quality-lead",
+              "read_only": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 30,
+      "slug": "scientific-computing",
+      "folder": "30-scientific-high-performance-computing",
+      "title": "Scientific and High-Performance Computing",
+      "optional": true,
+      "artifact": "a scientific-computing pack covering numerical methods, stability, validation, parallelism, simulations, reproducibility, accuracy, performance, and resource efficiency",
+      "manager": {
+        "role": "Scientific Computing Manager",
+        "id": "scientific-computing-manager",
+        "level": "A",
+        "parent": "development-workflow-orchestrator",
+        "read_only": true
+      },
+      "leads": [
+        {
+          "role": "Numerical Methods Lead",
+          "id": "scientific-computing-numerical-methods-lead",
+          "level": "B",
+          "parent": "scientific-computing-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Algorithm Researcher",
+              "id": "scientific-computing-algorithm-researcher",
+              "level": "C",
+              "parent": "scientific-computing-numerical-methods-lead",
+              "read_only": true
+            },
+            {
+              "role": "Numerical Stability Specialist",
+              "id": "scientific-computing-numerical-stability-specialist",
+              "level": "C",
+              "parent": "scientific-computing-numerical-methods-lead",
+              "read_only": false
+            },
+            {
+              "role": "Validation Specialist",
+              "id": "scientific-computing-validation-specialist",
+              "level": "C",
+              "parent": "scientific-computing-numerical-methods-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Parallel Computing Lead",
+          "id": "scientific-computing-parallel-computing-lead",
+          "level": "B",
+          "parent": "scientific-computing-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "CPU Parallelism Specialist",
+              "id": "scientific-computing-cpu-parallelism-specialist",
+              "level": "C",
+              "parent": "scientific-computing-parallel-computing-lead",
+              "read_only": false
+            },
+            {
+              "role": "GPU Computing Specialist",
+              "id": "scientific-computing-gpu-computing-specialist",
+              "level": "C",
+              "parent": "scientific-computing-parallel-computing-lead",
+              "read_only": false
+            },
+            {
+              "role": "Distributed Computing Specialist",
+              "id": "scientific-computing-distributed-computing-specialist",
+              "level": "C",
+              "parent": "scientific-computing-parallel-computing-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Data and Simulation Lead",
+          "id": "scientific-computing-data-and-simulation-lead",
+          "level": "B",
+          "parent": "scientific-computing-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Simulation Developer",
+              "id": "scientific-computing-simulation-developer",
+              "level": "C",
+              "parent": "scientific-computing-data-and-simulation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Scientific Data Specialist",
+              "id": "scientific-computing-scientific-data-specialist",
+              "level": "C",
+              "parent": "scientific-computing-data-and-simulation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Reproducibility Specialist",
+              "id": "scientific-computing-reproducibility-specialist",
+              "level": "C",
+              "parent": "scientific-computing-data-and-simulation-lead",
+              "read_only": false
+            }
+          ]
+        },
+        {
+          "role": "Performance Validation Lead",
+          "id": "scientific-computing-performance-validation-lead",
+          "level": "B",
+          "parent": "scientific-computing-manager",
+          "read_only": true,
+          "specialists": [
+            {
+              "role": "Benchmark Specialist",
+              "id": "scientific-computing-benchmark-specialist",
+              "level": "C",
+              "parent": "scientific-computing-performance-validation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Accuracy Comparison Specialist",
+              "id": "scientific-computing-accuracy-comparison-specialist",
+              "level": "C",
+              "parent": "scientific-computing-performance-validation-lead",
+              "read_only": false
+            },
+            {
+              "role": "Resource Efficiency Specialist",
+              "id": "scientific-computing-resource-efficiency-specialist",
+              "level": "C",
+              "parent": "scientific-computing-performance-validation-lead",
+              "read_only": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "root": {
+    "role": "Development Workflow Orchestrator",
+    "id": "development-workflow-orchestrator",
+    "level": "ROOT",
+    "read_only": true,
+    "folder": "00-development-workflow-orchestrator"
+  },
+  "counts": {
+    "team_folders": 30,
+    "optional_teams": 3,
+    "root_agents": 1,
+    "managers": 30,
+    "leads": 120,
+    "specialists": 469,
+    "total_agents": 620
+  }
+}
